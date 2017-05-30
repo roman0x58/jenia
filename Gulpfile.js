@@ -3,6 +3,7 @@
 /* jshint node: true */
 
 let gulp = require('gulp'),
+    path = require('path'),
     paths = require('./electron/lib/paths'),
     env = require('./electron/lib/env'),
     packaging = require('./electron/lib/packaging'),
@@ -142,7 +143,7 @@ gulp.task('publish', (done) => {
         },
         assets: fs.readdirSync(paths.release('installers'))
             .filter((p) => !p.startsWith('.'))
-            .map((p) => paths.release('installers', p))
+            .map((p) => path.join('release/installers/', p))
     }, done)
 })
 
