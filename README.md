@@ -4,7 +4,7 @@
 [travis-url]: https://travis-ci.org/roman0x58/jenia
 
 ## - about
-**Jenia** is an open-source cross-platform application that provide a usable GUI interface for Jenkins Cl. It should make you happy to build your code every day. This application have been created as a hobby project and the first purpose of it is to build your Jenkins Cl jobs quickly and less painfully, becuase IMHO the Jenkins UI is a bit ugly and unsable. Jenia built on [Electron](https://electron.atom.io/) and uses [Mithril](https://mithril.js.org).
+**Jenia** is an open-source cross-platform application that provide a usable GUI interface for Jenkins CI. It should make you happy to build your code every day. This application have been created as a hobby project and the first purpose of it is to build your Jenkins CI jobs quickly and less painfully, becuase IMHO the Jenkins UI is a bit ugly and unsable. Jenia built on [Electron](https://electron.atom.io/) and uses [Mithril](https://mithril.js.org).
 
 ![Jenia](./demo.gif)
 
@@ -16,7 +16,7 @@ Just download the specific package for your platform on the releases page or dir
 
 ## - features
 * The bookmarks with hotkeys for your jobs with access from the tray menu
-* Compact & better UI than default Jenkins Cl interface
+* Compact & better UI than default Jenkins CI interface
 * Shorthand actions for a job such as console output and build job.
 * Parametrizied build support (The application only supports choiсe, string, text, boolean parameters, if you have a different parameter than you can create PR for this)
 
