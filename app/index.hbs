@@ -1,0 +1,18 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>{{title}}</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {{#each assets.css as |asset|}}
+            <link rel="stylesheet" href="{{asset}}"/>
+        {{/each}}
+    </head>
+    <body>  
+        {{#each assets.js as |asset|}}
+            <script type="application/javascript" src="{{asset}}"></script>
+        {{/each}}
+    </body>
+</html>

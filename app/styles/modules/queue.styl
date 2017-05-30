@@ -1,0 +1,30 @@
+.jn-execution-queue
+    &__title
+        color: $cl.blue
+        margin-right 10px
+        font-weight bold
+    &__list
+        display inline
+    &__item
+        border: 1px solid $cl.light-gray
+        display inline-block
+        padding 2px 3px 3px 6px
+        margin-right 5px
+        line-height 14px
+        &-name
+            font-size 11px
+            font-weight bold
+        &-cancel
+            margin-left 2px
+            vertical-align text-top
+            cursor pointer
+            fill: lighten($cl.red, 25%)
+            &:hover
+                fill: $cl.red
+            .jn-icon
+                height 14px
+
+        // &+li:before
+        //     content '|'
+        //     color #666
+        //     padding-right 10px

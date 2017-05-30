@@ -1,0 +1,21 @@
+version: "3"
+services:
+  deb:
+    build: ./docker/x86_64/ubuntu
+    volumes:
+      - ./:/workdir
+    working_dir: /workdir
+    command: gulp pkg --type=deb --env=production
+  rpm:
+    build: ./docker/x86_64/centos
+    volumes:
+      - ./:/workdir
+    working_dir: /workdir
+    command: gulp pkg --type=rpm --env=production
+  exe:
+    build: ./docker/x86_64/windows
+    volumes:
+      - ./:/workdir
+    working_dir: /workdir
+    command: gulp pkg --type=exe --env=production --platform=win32
+

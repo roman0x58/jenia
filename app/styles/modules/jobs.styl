@@ -1,0 +1,61 @@
+.jn-jobs-list
+    list-style none
+
+.jn-jobs
+    &__status-cell
+        width 10%
+    &__name-cell
+        width 70
+    &__actions-cell
+        width 20%
+
+.jn-console-modal
+    width 100%      
+    .jn-modal__content
+        height 500px
+        
+// job list
+.jn-jobs-job
+    cursor pointer
+    position relative
+    div
+        position relative
+        z-index 3
+    // border-bottom 1px solid $app-color-light-gray
+    &--blue i.oi
+        &before
+            left 8px
+            top 9px
+    &__progress
+        position absolute
+        width 100%
+        height 100%
+        opacity 0.1
+        absolute top 0 left 0 
+        position absolute !important
+        z-index 1 !important
+        transition width .5s ease-in
+    &__wrapper
+        padding 20px
+    &__status
+        position relative
+        width 30px
+        color #3667a6
+        height 30px
+        border-radius 50px
+        .jn-icon
+            absolute left 7px top 7px
+            fill white
+          
+    &__name
+        font-weight bold
+        font-size 14px
+    &__url 
+        color $app-color-gray
+        margin-top 5px
+   
+for name, cl in $cl-job
+    .jn-jobs-job__progress--{name}_anime, 
+    .jn-jobs-job__status--{name}, 
+    .jn-jobs-job__status--{name}_anime
+        background cl

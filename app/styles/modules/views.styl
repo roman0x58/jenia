@@ -1,0 +1,20 @@
+// job views
+.jn-jobv
+    display block
+    width 100%
+    height 100%
+    white-space nowrap
+    &__item 
+        position relative
+        margin-right 10px
+        padding 14px
+        display inline-block
+        border-radius 0
+        cursor pointer
+        &--active, &:hover
+            color: $cl.blue
+            &:after
+                content ''
+                absolute bottom -2px left 0
+                width 100%
+                border-bottom: 2px solid $cl.blue

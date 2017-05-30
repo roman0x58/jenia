@@ -1,0 +1,10 @@
+node_modules
+bower_components
+electron/build
+electron/latest.json
+release
+.cache
+yarn.lock
+npm-debug.log*
+yarn-error.log
+.DS_Store

@@ -1,0 +1,122 @@
+.jn-job
+    lost-flex-container row
+    height 100%
+    &--bookmarked
+        .jn-job__action-bookmark
+            fill orange
+    &--console-active
+        // TODO add classes for actions
+        .jn-job__action-console
+            fill orange
+    &__info
+        flex 0 0 auto
+        display flex
+        justify-content space-between
+        align-items center
+        padding-bottom 10px
+    &__title
+        display inline-block
+        color: $cl.gray
+        margin 0
+    &__current
+        padding 20px
+        box-sizing border-box
+        lost-flex-container column
+        lost-column 2/3 flex
+    &__change-set
+        flex 0 0 auto
+        max-height 170px
+        overflow hidden
+        padding 20px
+        border 1px solid #eee       
+    &__console
+        overflow scroll
+        lost-row 1
+        position relative
+        height 100%
+        background #46525b
+        font-family 'Monaco', 'Consolas', 'Courier', monospace
+        box-sizing border-box
+        color #f7f7f7
+        font-size 11px
+        line-height 16px
+        &--hidden
+            display none
+    &__builds
+        animation slideIn .2s forwards ease-out
+        overflow-y scroll
+        position relative
+        height 100%
+        lost-column 1/3 flex
+
+    &__action
+        @extend .jn-actions__action
+            
+    &__actions
+        @extend .jn-actions
+        &--hidden 
+            display none
+    	&-list
+            height 100%
+
+    &__commit
+        font-size 12px
+        margin-bottom 5px
+        display flex
+        align-items center
+        &-author
+            color $app-color-gray
+            margin-left 5px
+            font-weight bold
+        &-msg
+            margin-left 5px
+        &-id
+            font-weight bold
+            min-width 60px
+            border 1px solid
+            color: $cl.blue
+            fill: $cl.blue
+    &-build
+        position relative
+        cursor pointer
+        padding 10px
+        border-left 5px solid transparent
+        &:hover
+            background #f7f7f7
+        &--active
+            background #f7f7f7
+            span.jn-job-build__number
+                font-weight bold
+                font-size 24px
+        &__number
+            margin-bottom 5px
+            font-size 16px
+            display block
+        &__date
+            color #999
+        &__progress
+            @extend .jn-jobs-job__progress
+        &__branch
+            color white
+            fill white
+            border-radius 0 !important
+            absolute right 0px top 0px
+            // transform translateY(-50%)
+            // top 50%
+.jn-label
+   border-radius 2px
+   padding 2px 5px
+   font-size 10px
+   display inline-flex
+   align-items center 
+   svg.jn-icon
+        margin-right 3px
+for name, cl in $cl-build
+    .jn-job-build__progress--{name}
+        background cl
+    .jn-job-build--{name}
+        border-color cl
+        .jn-job-build__branch
+            background cl
+.jn-console-output
+    padding 20px

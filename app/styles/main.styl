@@ -1,0 +1,181 @@
+@import 'nib'
+@import 'variables'
+
+@import 'lib/octicons'
+@import 'lib/mixins'
+@import 'lib/notifications'
+@import 'lib/spinner'
+@import 'lib/buttons'
+@import 'lib/animate'
+@import 'lib/modal'
+@import 'lib/tables'
+@import 'lib/tooltip'
+
+@import 'modules/settings'
+@import 'modules/views'
+@import 'modules/jobs'
+@import 'modules/job'
+@import 'modules/login'
+@import 'modules/params'
+@import 'modules/queue'
+@import 'modules/bookmark'
+
+@font-face 
+  font-family 'Source Sans Pro'
+  font-style normal
+  font-weight 400
+  src url('../fonts/SourceSansPro-Regular.ttf') format('truetype')
+
+@font-face 
+  font-family 'Source Sans Pro'
+  font-style bold
+  font-weight 700
+  src url('../fonts/SourceSansPro-Semibold.ttf') format('truetype')
+
+global-reset()
+scrollbar()
+
+/* 
+ * SDS Updater styles
+ * Namespace : up
+ */
+html, 
+body 
+    height 100%
+    color $app-color-dark-gray
+    font-family 'Source Sans Pro', Helvetica, Arial, sans-serif
+    font-size 13px
+    overflow hidden
+
+h1,h2,h3,h4
+    font-weight bold
+    font-size 16px
+    margin-bottom 10px
+
+.jn-titlebar 
+    &__app-title
+        font-weight bold
+    height 37px
+    flex 0 0 auto
+    padding 0 10px 0 5px
+    overflow hidden
+    zoom 1
+    background white
+    border-bottom 1px solid #eee
+    z-index 99
+    position relative
+    display flex
+    align-items center
+    justify-content space-between
+    -webkit-user-select none
+    -webkit-app-region drag
+
+.jn-tools
+    display inline-flex
+    -webkit-app-region no-drag
+    &__item
+        margin-left 5px
+        cursor pointer
+        padding 3px 5px
+        fill: $cl.gray
+        .jn-icon + .jn-tools__item-label
+            margin-left 3px
+        &-label
+            font-size 10px
+            font-weight bold
+        &:hover
+            background: #eee
+            border-radius 3px
+
+
+.jn-application
+    &--win32, &--linux
+        &.jn-application--focused
+            border-color: $cl.blue
+        border 1px solid #bbb
+    height 100%
+    min-height 100%
+    display flex
+    flex-direction column
+    &__content
+       overflow hidden
+       flex 1 1 auto
+       height 100%
+    &__header
+       flex 0 0 auto
+       display flex
+       align-items center
+       justify-content flex-start
+       border-bottom 2px solid $app-color-light-gray
+       &--hidden
+          display none
+    &__header
+        padding 0 20px
+
+    &__footer
+        font-size 12px
+        height 40px
+        padding 0 20px
+        flex 0 0 auto
+        border-top 1px solid $app-color-light-gray
+        display flex
+        justify-content space-between
+        align-items center
+
+.jn-container
+    lost-center 980px
+    position relative   
+    height 100%
+
+.jn-logo 
+    background url('../images/logo.png') no-repeat center
+    height 160px
+
+.jn-icon
+    vertical-align middle
+    width: 16px
+    height: 16px
+
+ .jn-version
+    text-align right
+    color #999
+
+ .jn-update
+    &-fail
+        background: $cl.red !important
+    &-ok, &-fail
+        backface-visibility hidden
+        border-radius 50px
+        background: $cl.green
+        width 12px
+        height 12px
+        padding 3px
+        fill white
+        margin-left 5px
+        margin-top -3px
+    &-sync
+        fill: $cl.blue
+        animation spin 1.3s infinite cubic-bezier(.3,.96,.56,.82)
+        margin-left 5px
+        margin-top -3px
+    &-available
+        color: $cl.orange
+        margin-left 5px
+        cursor pointer
+
+.jn-default-header
+    &__item
+        @extend .jn-jobv__item
+
+.jn-overlay
+  position fixed
+  overflow hidden
+  height 100%
+  width 100%
+  top 0
+  left 0
+  z-index 998
+  background rgba(white, 0.4) !important
+  transition all 0.3s
+  opacity 0
+  visibility hidden

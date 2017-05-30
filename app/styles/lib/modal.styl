@@ -1,0 +1,63 @@
+.jn-modal
+  absolute top 50% left 50%
+  width 50%
+  max-width 630px
+  min-width 320px
+  height auto
+  z-index 2000
+  visibility hidden
+  backface-visibility hidden
+  transform translate(-50%, -50%)
+  &__wrapper
+    border 1px solid #eee
+    position relative
+    > *
+      background white
+      padding 20px
+    
+  &__content
+    max-height 500px
+    overflow-y scroll
+    
+  &__header
+    position relative
+    border-bottom 1px solid $app-color-light-gray
+    h3
+      margin 0
+      font-weight 400
+
+  &__close
+    cursor pointer
+    absolute right 15px top 20px
+    fill: $cl.gray
+    &:hover
+      fill: $cl.dark-gray
+      color: lighten($cl.blue, 30%)
+
+  &--scale-in &__wrapper
+    animation scaleIn .3s forwards ease-in-out
+
+  &--show
+    visibility visible
+    & ~ .jn-overlay
+      background rgba($app-color-blue, 0.7) !important
+      opacity 1
+      visibility visible
+
+@keyframes scaleIn
+  from
+    opacity 0
+    transform scale(.7)
+  to
+    opacity 1
+    transform scale(1)
+
+  // &--fade-in-scale .jn-modal__wrapper
+    // transition all 0.3s
+    // transform scale(0.7)
+    // opacity 0
+
+  // &--show.jn-modal--fade-in-scale .jn-modal__wrapper
+    // transform scale(1)
+    // opacity 1
+

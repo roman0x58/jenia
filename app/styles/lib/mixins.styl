@@ -1,0 +1,42 @@
+scrollbar(size = 5px, thumb-bg = #e1e1e1, track-bg = transparent)
+    ::-webkit-scrollbar 
+        width size
+        height size
+
+    ::-webkit-scrollbar-button 
+        width 0px
+        height 0px
+
+    ::-webkit-scrollbar-thumb 
+        background thumb-bg
+        border none
+
+    ::-webkit-scrollbar-thumb:hover 
+        background rgba(darken(thumb-bg, 15%), .7)
+
+    ::-webkit-scrollbar-thumb:active 
+        background rgba(darken(thumb-bg, 15%), .7)
+
+    ::-webkit-scrollbar-track 
+        background transparent
+
+    // ::-webkit-scrollbar-track:hover 
+    //   background: #666666;
+
+    // ::-webkit-scrollbar-track:active
+    //   background: #333333;
+
+    ::-webkit-scrollbar-corner 
+        background transparent
+
+inline-dl()
+  dt
+    display inline-block
+    min-width 220px
+    font-weight normal
+    line-height 30px
+  dd
+    display inline
+    &:after
+      display block
+      content ''

@@ -1,0 +1,50 @@
+// make notify color
+notify(type, bg, icon, color = whitesmoke)
+  .jn-notify--{type}
+    background-color: bg
+    color : color
+    &:before
+      @extend .{icon}:before
+      font-family: 'octicons'
+      background-color lighten(bg, 10%)
+
+.jn-notifications
+  // absolute top 0
+  width 100%
+
+.jn-notify
+    z-index 99  
+    padding 5px 45px 5px
+    position relative
+    min-height 15px
+    line-height 14px
+    font-size 12px
+    &--fade-out
+      animation fadeOut .3s ease-out forwards
+
+    &--fade-in
+      animation fadeIn .3s ease-in forwards
+    &:before
+      absolute top bottom left right
+      padding 6px 13px
+      text-align center
+      box-sizing border-box
+      width 35px
+    &__message
+      font-size 12px
+    &__close-tool
+      absolute top 5px right 10px
+      display inline-block
+      fill alpha(whitesmoke, 0.5)
+      cursor pointer
+      &:after
+        absolute top 8px bottom right 10px
+      &:hover
+        fill whitesmoke
+    p
+      margin 0
+
+notify('error', #E76B6B, 'octicon-alert')
+notify('info', #42729B,  'octicon-issue-opened')
+notify('success', #249991, 'octicon-check')
+

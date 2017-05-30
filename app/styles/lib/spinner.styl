@@ -1,0 +1,55 @@
+.jn-spinner
+  top 50%
+  left 50%
+
+  margin-left -30px
+  margin-right -30px
+
+  font-size 5px
+
+  position absolute
+  text-indent -9999em
+  z-index 999
+
+  border: 0.5em solid rgba($cl.green, 0.2)
+  border-top-color: rgba($cl.green, 0.7)
+  // border-left-color #ffffff
+
+  -webkit-transform translateZ(0)
+  -ms-transform translateZ(0)
+  transform translateZ(0)
+
+  -webkit-animation spin 0.8s infinite linear
+  animation spin 0.8s infinite linear
+   
+  visibility hidden
+  &--show
+    visibility visible
+    & ~ .jn-overlay
+      opacity 1
+      visibility visible
+  &,
+  &:after
+    border-radius 50%
+    width 30px
+    height 30px
+
+@-webkit-keyframes spin
+  0%
+    -webkit-transform rotate(0deg)
+    transform rotate(0deg)
+
+  100%
+    -webkit-transform rotate(360deg)
+    transform rotate(360deg)
+
+@keyframes spin
+  0%
+    -webkit-transform rotate(0deg)
+    transform rotate(0deg)
+
+  100%
+    -webkit-transform rotate(360deg)
+    transform rotate(360deg)
+
+

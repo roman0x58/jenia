@@ -1,0 +1,62 @@
+.jn-tooltip
+  position absolute
+  z-index 999
+  top 20px
+  max-width 200px
+  &--light
+    border 1px solid
+    .jn-tooltip__wrapper
+      background white
+      color black
+        
+  &__wrapper
+    font-size 11px
+    line-height 13px
+    position relative
+    display inline-block
+    padding 10px
+
+    background black
+    color white
+    
+    &:before
+      background black
+      content ''
+      width 10px
+      height 10px
+      display block
+      position absolute
+      z-index -1
+      transform: translate3d(-5px, -5px, 0) rotate3d(0, 0, 1, 45deg)
+
+  &--fade-in-top
+    animation fadeInBottom .5s forwards ease-in-out
+
+  &--fade-in-bottom
+    animation fadeInBottom .5s forwards ease-in-out
+
+  &--fade-in-right
+    animation fadeInRight .5s forwards ease-in-out
+
+  &--fade-in-left
+    animation fadeInLeft .5s forwards ease-in-out
+
+  &--bottom
+    .jn-tooltip__wrapper:before
+      left 50%
+      top 0
+
+  &--left
+    .jn-tooltip__wrapper:before
+      left 100%
+      top 50%
+
+  &--right
+    .jn-tooltip__wrapper:before
+      left 0
+      top 50%
+
+  &--top
+    .jn-tooltip__wrapper:before
+      left 50%
+      top 100%

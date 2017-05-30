@@ -1,0 +1,18 @@
+extends: 'eslint:recommended'
+env:
+  browser: true
+  commonjs: true
+  es6: true
+  node: true
+parserOptions:
+  ecmaVersion: 2017
+  sourceType: module
+globals:
+  ipcRenderer: true
+rules:
+  no-trailing-spaces: "error"
+  no-console: off
+  indent: ["error", 4, {SwitchCase: 1}]
+  linebreak-style: ["error", "unix"] 
+  quotes: ["error", "single"] 
+  semi: ["error", "never"] 

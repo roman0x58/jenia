@@ -1,0 +1,30 @@
+.jn-button
+    border 1px solid $app-color-gray
+    color $app-color-gray
+    background transparent
+    cursor pointer
+    font-size 14px
+    padding 10px 15px
+    border-radius 2px
+    &:focus
+        outline 0
+    &:hover
+        border-color darken($app-color-gray, 15%) 
+        color darken($app-color-gray, 15%) 
+
+.jn-button-sm
+    @extend .jn-button
+    padding 7px 12px
+    font-size 12px
+
+button-variant(variant, c)
+    .jn-button--{variant}
+        border 1px solid c
+        color c
+        &:hover
+            border-color darken(c, 15%) 
+            color darken(c, 15%)  
+
+button-variant('green', $cl.green)
+button-variant('white', whitesmoke)
+button-variant('blue', $cl.blue)

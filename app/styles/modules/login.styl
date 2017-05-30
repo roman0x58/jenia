@@ -1,0 +1,192 @@
+.jn-login
+    // position relative
+    // height 100%
+    
+.jn-login-form
+    absolute top 50% left 50%
+    transform translate(-50%, -50%)
+    border-radius 5px
+    width 300px
+    padding 30px
+    background white
+    z-index 1
+    &__connect-btn
+       @extends .jn-button, .jn-button--green
+
+
+.jn-form
+    &__input-textarea
+        & > textarea
+            resize none
+    &__select
+        position relative
+        display inline-block
+        width 100%
+        & > select
+            cursor pointer
+            color #7b7b7b
+            background white
+            -webkit-appearance none
+
+            &:hover, &:focus
+                color $app-color-dark-blue
+                background $app-color-light-gray
+
+        &--disabled
+            pointer-events none
+	        opacity .5
+            &::after
+                border-top-color #ccc
+        &:hover, &:focus
+            &::after
+                border-top-color $app-color-dark-blue
+
+        &::after
+            content ''
+            absolute bottom 12px right 15px
+            width 0
+            height 0
+            pointer-events none
+            border-width 8px 5px 0 5px
+            border-style solid
+            border-color: $app-color-blue transparent transparent transparent
+
+    &__input
+        position relative 
+        &-label-description
+            line-height 14px
+            font-size 12px
+            margin-top 5px
+            width 70%
+            color: #ccc
+        &-error
+            color white
+            background: $cl.red
+            padding 7px
+        &--invalid > input
+            border-color: $cl.red !important
+            color: $cl.red !important
+        margin-top 10px
+        input[type=text]
+        input[type=password]
+        select
+            height 35px
+            
+        input[type=text]
+        input[type=password]
+        select
+        textarea
+            outline none
+            border-radius 2px
+            border 1px solid lighten($app-color-gray, 50%)
+            font-size 14px
+            width 100%
+            padding 5px 10px
+            box-sizing border-box
+            color $app-color-gray
+        
+    &__checkbox
+        display block
+        position relative
+        clearfix()
+        input[type=checkbox]
+            position absolute
+            z-index -1
+            opacity 0
+        label
+            padding-left 30px
+            position relative
+            z-index 5
+
+        &-indicator
+            position absolute
+            top 7px
+            left 0
+            height 20px
+            width 20px
+            background #eee
+            .jn-form__checkbox:hover input ~ &,
+            .jn-form__checkbox:hover input:focus ~ &
+                background #ddd
+            .jn-form__checkbox input:checked ~ &
+                background $app-color-dark-blue
+            .jn-form__checkbox:hover input:not([disabled]):checked ~ &,
+            .jn-form__checkbox input:checked:focus ~ &
+                background lighten($app-color-dark-blue, 15%)
+            &:after
+                content ''
+                position absolute
+                display none 
+                .jn-form__checkbox input:checked ~ &
+                    display block
+                .jn-form__checkbox &
+                    left 8px
+                    top 4px
+                    width 3px
+                    height 8px
+                    border solid white
+                    border-width 0 2px 2px 0
+                    transform rotate(45deg)
+    footer
+        margin-top 10px
+    label
+        color $app-color-gray
+        cursor pointer
+        margin 10px 0
+        user-select none
+        display block
+
+.jn-suggestion-link
+    font-weight bold
+    position absolute
+    right 10px
+    top 33px
+    border-radius 3px
+    background whitesmoke
+    padding 3px 5px
+    color #ccc
+    font-size 10px
+    cursor pointer
+    &:hover
+        color: $cl.gray
+
+.jn-suggestion-box
+    margin-top 5px
+    box-sizing border-box
+    z-index 9
+    position absolute
+    background: rgba($cl.purple, .9)
+    border-radius 3px
+    color white
+    width 100%
+    fill white
+    animation fadeInTop .5s forwards
+    &__results
+        max-height 70px
+        overflow-y scroll
+    &--hidden
+        display none
+    &__title
+        text-transform uppercase
+        font-size 10px
+        display inline-flex
+        width 100%
+        align-items center
+        justify-content space-between
+        box-sizing border-box
+        padding 10px
+        border-bottom 1px solid
+    &__close-tool
+        cursor pointer
+        fill white
+    &__label
+        font-weight bold
+    &__item
+        padding 10px
+        display flex
+        align-items center
+        justify-content space-between
+        cursor pointer
+        &--selected
+            text-decoration underline
+            background: lighten($cl.purple, 10%)
