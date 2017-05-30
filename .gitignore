@@ -4,6 +4,7 @@ electron/build
 electron/latest.json
 release
 .cache
+.vscode
 yarn.lock
 npm-debug.log*
 yarn-error.log
