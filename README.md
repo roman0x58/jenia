@@ -9,7 +9,7 @@
 ![Jenia](./demo.gif)
 
 ## - installation
-Just download the specific package for your platform on the releases page or directly from the [website](https://jenia.pl). 
+Just download the specific package for your platform on the [releases](https://github.com/roman0x58/jenia/releases) page or directly from the [website](https://jenia.pl). 
 - Jenia was tested using Jenkins of version 1.6xx, 2.5x, 2.6x with or without Git plugin. 
 - The time on Jenkins server should be correctly set, otherwise you will see an incorrect build progress status.
 > N.B. If you have some troubles with a package for your OS or found some bugs please create an issue about this.
@@ -18,7 +18,7 @@ Just download the specific package for your platform on the releases page or dir
 * The bookmarks with hotkeys for your jobs with access from the tray menu
 * Compact & better UI than default Jenkins CI interface
 * Shorthand actions for a job such as console output and build job.
-* Parametrizied build support (The application only supports choiсe, string, text, boolean parameters, if you have a different parameter than you can create PR for this)
+* Parametrizied build support (The application only supports choiсe, string, text, boolean parameters, if you have a different parameter than you can create PR or Issue for this)
 
 ## - todo's
 The application still in a developing process and have the tons of ideas and some things that need be refactored, but general I want to do the next in the future
