@@ -1,7 +1,5 @@
 'use strict'
 
-/* jshint node: true */
-
 let gulp = require('gulp'),
     path = require('path'),
     paths = require('./electron/lib/paths'),
