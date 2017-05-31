@@ -181,10 +181,17 @@ const cleanUp = (done) => {
     del(paths.release(`${appName}*`)).then(() => done()).catch(err => done(err))
 }
 
+const createInstallersFolder = (done) => {
+    fs.mkdir(paths.release('installers'), (err) => {
+        if(err && err.code !== 'EEXIST') done(err)
+        done()
+    })
+}
+
 module.exports = (logger, options, done) => {
     log = logger
     pkgOptions = options
 
     log(`Start packaging an application to '${pkgOptions.type}' (${pkgOptions.platform}) ... this may take a while, please be patient`)
-    series([createPkg, createInstaller, cleanUp], done)
+    series([createInstallersFolder, createPkg, createInstaller, cleanUp], done)
 }
