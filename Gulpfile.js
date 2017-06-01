@@ -21,11 +21,11 @@ let gulp = require('gulp'),
     fs = require('fs'),
     del = require('del')
 
+env.set($.util.env.env || 'development')
+
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'))
 const logger = (logFn, color) => (head, ...tail) => logFn.apply(logFn, [$.util.colors[color](head)].concat(tail))
 const yellowLog = logger(console.log, 'yellow')
-
-env.set($.util.env.env || 'development')
 
 yellowLog(fs.readFileSync('./greeting', 'utf8'))
 yellowLog(`
@@ -75,7 +75,7 @@ gulp.task('clean', () => {
 
 gulp.task('template', () => {
     return gulp.src(paths.app('index.hbs'))
-        .pipe($.compileHandlebars({ assets: paths.assets, title: pkg.title }))
+        .pipe($.compileHandlebars({ assets: paths.assets(env), title: pkg.title }))
         .pipe($.rename('index.html'))
         .pipe(gulp.dest(paths.build()))
 })

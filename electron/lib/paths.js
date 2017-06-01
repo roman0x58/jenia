@@ -2,13 +2,9 @@
 
 /* jshint node: true */
 
-let path = require('path'),
-    R = require('ramda'),
-    env = require('./env')
-
+const path = require('path')
 const root = process.cwd()
-// const pkg   = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
-
+const join = (c, s, r) => path.resolve(r || root, c, s || '')
 const dirs = {
     app: 'app/',
     styles: 'app/styles/',
@@ -20,25 +16,26 @@ const dirs = {
     resources: './electron/resources/'
 }
 
-let ex = {},
-    joint = (c, s, r) => {
-        r = r || root
-        return path.resolve(r, c, s || '')
-    }
+let ex = {}
 
 for (let i in dirs) {
     if (dirs.hasOwnProperty(i)) {
-        ex[i] = joint.bind(null, dirs[i])
+        ex[i] = join.bind(null, dirs[i])
     }
 }
 
-ex.assets = {
-    js: [
-        R.when(env.dev, () => 'http://localhost:35729/livereload.js')(R.T),
-        './bootstrap.js',
-        './build.js'
-    ],
-    css: ['./styles/main.css']
+ex.assets = (env) => {
+    const assets = {
+        js: [
+            './bootstrap.js',
+            './build.js'
+        ],
+        css: ['./styles/main.css']
+    }
+    if (env.dev()) {
+        assets.js.concat('http://localhost:35729/livereload.js')
+    }
+    return assets
 }
 
 module.exports = ex
