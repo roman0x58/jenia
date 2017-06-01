@@ -172,5 +172,5 @@ let makeBundle = function (bundle, { sourceMap = false, uglify = false, fileName
 }
 
 gulp.task('start', gulp.series('build', gulp.parallel('watch', () => {
-    return proc.spawn(electron, ['--js-flags=--harmony-async-await', './electron/main.js'], { stdio: 'inherit' }).on('close', process.exit)
+    return proc.spawn(electron, ['./electron/main.js'], { stdio: 'inherit' }).on('close', process.exit)
 })))
