@@ -7,7 +7,7 @@ let ex = {
 }
 
 const modes = { dev: Symbol('development'), prod: Symbol('production') }
-const env = () => process.env.NODE_ENV === 'production' ? modes.production : modes.dev
+const env = () => process.env.NODE_ENV === 'production' ? modes.prod : modes.dev
 const platforms = ['darwin', 'linux', 'win32']
 const capitalize = R.compose(
     R.join(''),
