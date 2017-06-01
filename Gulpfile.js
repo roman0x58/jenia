@@ -25,10 +25,14 @@ env.set($.util.env.env || 'development')
 
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'))
 const logger = (logFn, color) => (head, ...tail) => logFn.apply(logFn, [$.util.colors[color](head)].concat(tail))
-const yellowLog = logger(console.log, 'yellow')
 
-yellowLog(fs.readFileSync('./greeting', 'utf8'))
-yellowLog(`
+let log   = logger($.util.log, 'blue')
+log.error = logger($.util.log, 'red')
+log.pkg   = logger($.util.log, 'magenta')
+log.sys   = logger(console.log, 'yellow')
+
+log.sys(fs.readFileSync('./greeting', 'utf8'))
+log.sys(`
      App name    : ${pkg.title}
      App version : ${pkg.version}
      Platform    : ${process.platform}
@@ -46,12 +50,12 @@ const bundler = browserify({
     .transform(babelify.configure({ presets: ['es2015'] }))
 
 
-gulp.task('styles', () => {
+gulp.task('styles', (done) => {
     return gulp.src(paths.styles('*.styl'))
         .pipe($.stylus({ use: [poststylus('lost'), nib()], 'include css': true }))
-        .on('error', function (e) {
-            $.util.log(e.message)
-            this.emit('end')
+        .on('error', (e) => {
+            log.error(e.message)
+            done()
         })
         .pipe(gulp.dest(paths.build('styles/')))
         .pipe($.livereload())
@@ -121,8 +125,7 @@ gulp.task('pkg-build', () => {
 })
 
 gulp.task('pkg', gulp.series('build', 'pkg-build', (done) => {
-    let log = (s) => $.util.log($.util.colors.magenta('[Packaging] -> ' + s))
-    return packaging(log, {
+    return packaging((s) => log.pkg('[Packaging] -> ' + s), {
         type: $.util.env.type,
         platform: $.util.env.platform || process.platform,
         arch: '64'
@@ -146,24 +149,20 @@ gulp.task('publish', (done) => {
 })
 
 let makeBundle = function (bundle, { sourceMap = false, uglify = false, fileName = 'build.js' }) {
-    let lo = (s) => {
-        $.util.log($.util.colors.blue(s))
-    }
-
-    lo('[Bundle] -> Bundling es6 application...')
+    log('[Bundle] -> Bundling es6 application...')
 
     let stream = bundle.bundle()
-        .on('error', $.util.log)
+        .on('error', log.error)
         .pipe(source(fileName))
         .pipe(buffer())
 
     if (uglify === true) {
-        lo('[Bundle] -> Uglifiyng bundle')
+        log('[Bundle] -> Uglifiyng bundle')
         stream.pipe($.uglify({ compress: { drop_console: true }}))
     }
 
     if (sourceMap === true) {
-        lo('[Bundle] -> Creating source map')
+        log('[Bundle] -> Creating source map')
         return stream
             .pipe($.sourcemaps.init({ loadMaps: true }))
             .pipe($.sourcemaps.write('./'))
