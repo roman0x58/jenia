@@ -26,7 +26,6 @@ let callApi = function (login, password, uri, issuer, path, options, segment = '
         options = R.omit('query', options)
     }
 
-    // TODO ! Mask shown when job is building
     if (!options.background) {
         mask.show()
     }

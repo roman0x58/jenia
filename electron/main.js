@@ -109,7 +109,6 @@ app.on('ready', createWindow)
 app.on('before-quit', () => app.willQuitApp = true)
 app.on('will-quit', () => appWindow = null)
 
-// updates.map(u => appWindow.webContents.send('updates', u))
 const send = R.curryN(2, (evt, value) => appWindow.webContents.send(evt, value))
 ipcMain.on('request', (e, v) => {
     R.cond([
@@ -118,6 +117,3 @@ ipcMain.on('request', (e, v) => {
         [R.T, (msg) => { throw new Error('Unknown message type ' + msg) }]
     ])(v.msgType).then(send(v.msgType)).catch(send(v.msgType + 'fail'))
 })
-
-// ipcMain.on('check-updates', checkUpdates)
-ipcMain.on('update', installUpdate)

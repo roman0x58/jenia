@@ -62,7 +62,7 @@ export const Job = {
         const buildNumber = selected.map(R.prop('number'))
         const logText = selected.chain((v) => Maybe(R.prop('console', v)))
         const activeLog = !logText.map(s => !!s.end()).getOrElse(true)
-        // console.log('[log] logtext', logText.map(v => v()).getOrElse(''))
+
         return m('.jn-job', {
             class: util.classy({
                 'jn-job--console-active': activeLog

@@ -45,7 +45,6 @@ const streamValues = R.map(R.compose(R.filter(flyd.isStream), R.values))
 // streamsOf :: { k: * }... -> [stream]
 const streamsOf = R.unapply(R.transduce(streamValues, R.concat, []))
 
-// https://github.com/arangamani/jenkins_api_client
 const Header = {
     view(vnode) {
         return m('.jn-application__header', { class: R.isEmpty(vnode.children) ? 'jn-application__header--hidden' : '' }, vnode.children)
@@ -275,7 +274,6 @@ const initApp = (model) => {
     }
 }
 
-// TODO white screen when auto sign in
 localforage.getItem('app')
     .then(restore(AppModel))
     .then(initApp)
