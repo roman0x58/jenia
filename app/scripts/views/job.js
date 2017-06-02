@@ -35,7 +35,6 @@ export const Job = {
         state.consoleListener.end(true)
     },
     consoleToggle(e, state, dispatcher) {
-        e.redraw = false
         state.console(!state.console())
         if (state.selected().isJust && R.equals(state.console(), true)) {
             return dispatcher
