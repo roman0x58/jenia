@@ -32,8 +32,9 @@ ex.assets = (env) => {
         ],
         css: ['./styles/main.css']
     }
+
     if (env.dev()) {
-        assets.js.concat('http://localhost:35729/livereload.js')
+        assets.js = assets.js.concat('http://localhost:35729/livereload.js')
     }
     return assets
 }

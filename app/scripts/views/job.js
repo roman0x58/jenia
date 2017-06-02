@@ -55,7 +55,6 @@ export const Job = {
     },
     view({ state, attrs: { dispatcher } }) {
         const selected = state.selected()
-        // git changes
         const isActive = R.partial(isBuildActive, [selected])
         const jobName = R.prop('name', state.job())
         const buildNumber = selected.map(R.prop('number'))
