@@ -18,7 +18,7 @@ const assocBranch = R.lift((build) => R.assoc('branch', R.compose(transformBranc
 const assocChanges = R.lift((build) =>
     R.assoc('changes', Maybe(R.prop('changeSet')(build))
         .map(R.prop('items'))
-        .map(R.sort(R.prop('timestamp')))
+        .map(R.reverse)
         .chain(i => R.isEmpty(i) ? Maybe.Nothing() : Maybe.Just(i))
     , build)
 , Maybe)
