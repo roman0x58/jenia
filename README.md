@@ -22,9 +22,8 @@ Just download the specific package for your platform on the [releases](https://g
 
 ## - todo's
 The application still in a developing process and have the tons of ideas and some things that need be refactored, but general I want to do the next in the future
-* A job progress in the tray menu
 * Additional information at the build view (such as parameters of a build)
-* System notifications of build finishing
+* System notifications for finished builds
 * Functional tests
 
 ## - contributing
