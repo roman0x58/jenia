@@ -9,7 +9,11 @@ import { Maybe } from 'ramda-fantasy'
 
 const makeQuery = (q, ...args) => R.apply(R.merge, [{ query: { tree: R.ifElse(R.is(Array), R.join(','), R.identity)(q) } }].concat(args))
 const nonEmpty = R.complement(R.either(R.isEmpty, R.isNil))
-
+const deepPluck = R.curry(R.compose(
+    R.reject(R.isNil),
+    R.flip(R.reduce(R.compose(R.flatten, R.flip(R.pluck))))
+))
+const pluckJobs = R.compose(deepPluck(['executors', 'currentExecutable']), R.prop('computer'))
 export const createModel = () => collectionMixin({
     bookmarks    : flyd.stream([]),
     jobs         : flyd.stream(),
@@ -18,6 +22,14 @@ export const createModel = () => collectionMixin({
     views        : flyd.stream(),
     job          : flyd.stream(),
     queue        : flyd.stream([]),
+    building     : flyd.stream(),
+
+    checkBuilding(){
+        let query = ['computer[executors[currentExecutable[number,timestamp]],oneOffExecutors[currentExecutable[number,timestamp]]]']
+        return this.jenkins().req('computer', makeQuery(query, { background: true }))
+            .then(pluckJobs)
+            .then(this.building)
+    },
 
     // -------------- View
     setView(view, opts = {}) {

@@ -3,6 +3,7 @@ import R from 'ramda'
 import notifications from '../components/notifications'
 
 export const callMain = R.curryN(2, (...args) => ipcRenderer.send.apply(ipcRenderer, args))
+export const ipc = R.curryN(2, (...args) => ipcRenderer.send.apply(ipcRenderer, args))
 export const ipcRequest = (message, ...args) => {
     return new Promise((resolve, reject) => {
         let timeout = setTimeout(() => {

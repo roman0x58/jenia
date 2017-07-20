@@ -6,6 +6,7 @@ import util from '../components/util'
 import moment from 'moment'
 import flyd from 'flyd'
 import { calcBuildDuration, Actions } from './joblist'
+import filter from 'flyd/module/filter'
 
 // build number is selected
 const isBuildActive = (selected, n) => selected.map(R.prop('number')).map(R.equals(n)).getOrElse(false)
@@ -32,11 +33,11 @@ export const Job = {
     job: flyd.stream(),
     onremove({ state }) {
         state.console(false)
-        state.consoleListener.end(true)
     },
     consoleToggle(e, state, dispatcher) {
         state.console(!state.console())
         if (state.selected().isJust && R.equals(state.console(), true)) {
+            flyd.combine((log, $s) => R.juxt([cancelLog, $s.end])(state.selected, true), [filter(R.equals(false), state.console)])
             return dispatcher
                 .dispatch('pullLog', state.job(), state.selected().chain(R.prop('number')))
                 .then(assocLogText(state.selected))
@@ -50,7 +51,6 @@ export const Job = {
     },
     oninit({ state, attrs }) {
         state.job = attrs.job
-        state.consoleListener = flyd.on(R.when(R.equals(false), () => cancelLog(state.selected)), state.console)
         state.selected(R.compose(assocGit, Maybe, R.prop('selected'))(state.job()))
     },
     view({ state, attrs: { dispatcher } }) {
@@ -68,7 +68,7 @@ export const Job = {
         }, [
             m('.jn-job__current',
                     m('.jn-job__info', [
-                        m('h3.jn-job__title', `${jobName} - ${buildNumber.map(R.concat('#')).getOrElse('No builds yet')}`),
+                        m('h3.jn-job__title', `${jobName} - ${buildNumber.map(String).map(R.concat('#')).getOrElse('No builds yet')}`),
                         state.job() ? m(Actions, {
                             job: state.job(),
                             console: {

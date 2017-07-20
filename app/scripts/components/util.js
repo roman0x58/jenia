@@ -26,7 +26,7 @@ export const env = R.fromPairs(R.chain((logic) =>
     ['unless', 'when']))
 
 export const checkPaths = R.curry((route, paths) =>
-    R.any(R.equals(R.prop('name', route())))(R.ifElse(R.is(Array), R.identity, R.of)(paths)))
+    R.any(R.equals(route.name))(R.ifElse(R.is(Array), R.identity, R.of)(paths)))
 
 export const collectionMixin = (target) => R.merge(target, ({
     add(pathName, item) {
@@ -58,7 +58,7 @@ export default {
         return `${prefix + id}`
     },
     contains: R.curry((needle, str) => str.includes(needle)),
-    toArray: R.ifElse(R.isArrayLike, R.identity, R.of),
+    toArray: R.ifElse(R.is(Array), R.identity, R.of),
     exists: (m, f) => Maybe(m).map(f).getOrElse(false),
     classy: R.compose(R.join(' '), R.keys, R.pickBy((v) => R.equals(true, v))),
     toM: (f) => ({ view: f }),
@@ -88,7 +88,7 @@ export default {
                 R.compose(stream, setValue)
             )(stream())
         }
-        return R.isArrayLike(prop) ? R.zipObj(prop, R.map(proceed, prop)) : proceed(prop)
+        return R.is(Array)(prop) ? R.zipObj(prop, R.map(proceed, prop)) : proceed(prop)
 
     }),
     svg: (name, cls = '', handler) => {

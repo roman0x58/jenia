@@ -16,11 +16,11 @@ import tooltip from './components/tooltip'
 import mask from './components/mask'
 import { Tip } from './components/tooltip'
 import u from './components/util'
-import { refreshApp, refreshAppImmidiately } from './components/refresh'
+import { refresh, refreshImmediate } from './components/refresh'
 import { checkPaths, platform, withoutRedraw } from './components/util'
 import { defaultServer, findServer, serverPredicate } from './models/app'
 import dispatcher from './dispatcher'
-import { callMain } from './services/ipc'
+import { ipc } from './services/ipc'
 import { updateAvailable, checkForUpdates, installUpdate } from './services/updates'
 
 // Views
@@ -82,7 +82,7 @@ const Tool = {
 
 const Layout = {
     view(vnode) {
-        const isActive = checkPaths(AppModel.route)
+        const isActive = checkPaths(AppModel.route())
         const rTools = [
             !isActive('login') && App.model ? m(Tool, {
                 onclick: withoutRedraw(() => App.signOut()),
@@ -136,7 +136,7 @@ ipcRenderer.on('browser-window-show', () => App.refresh())
 // Catch some things from main process
 ipcRenderer.on('build', (e, v) => App.model.runBuild(v.job, v.job.paramses)
     .then(() => new Notification('Build started', { body: v.name }))
-    .then(R.when(R.always(browserWindow.isVisible()), () => dispatcher.dispatch('updateQueue')))
+    .then(R.when(R.always(browserWindow.isVisible()), () => App.refresh()))
 )
 ipcRenderer.on('route', (e, v) => App.routeTo(v.path, v.attrs))
 
@@ -186,18 +186,20 @@ const App = {
             .then(R.tap(([model]) => {
                 App.model = model
                 App.streams = []
-                App.streams.push(refreshApp(App.model, AppModel.route))
+
+                App.streams.push(refresh(App.model, AppModel.route))
                 App.streams.push(flyd.on(() => storeAppModel(model), stateTick(model)))
-                App.streams.push(flyd.on(callMain('bookmarks'), model.bookmarks))
+                App.streams.push(flyd.on(ipc('bookmarks'), model.bookmarks))
+
                 dispatcher.dispatch('settings.addOrUpdate', 'servers', ifSetting('saveserverpass', false, R.omit(['password']))(credentials), serverPredicate)
             }))
     },
     signOut() {
         let credentials = App.model.jenkins().credentials()
         undefault(credentials)
-        kill(R.concat(App.streams, streamsOf(App.model)))
+        kill(R.flatten(R.concat(App.streams, streamsOf(App.model))))
         // clear bookmarks
-        callMain('bookmarks', [])
+        ipc('bookmarks', [])
         delete App.model
         return App.routeTo('login', { state: credentials })
     },
@@ -208,9 +210,7 @@ const App = {
             .then(() => notifications.success('successfuly connected to jenkins'))
     },
     refresh() {
-        if (App.model) {
-            refreshAppImmidiately(App.model, AppModel.route)
-        }
+        if (App.model) refreshImmediate(App.model)
     },
     routes: {
         job: makeRoute((attrs) => [
@@ -255,19 +255,17 @@ const restore = R.curry((model, state) => {
 
 const initApp = (model) => {
     // clear bookmarks
-    callMain('bookmarks', [])
+    ipc('bookmarks', [])
 
     flyd.on(() => localforage.setItem('app', R.assoc('history', model.history(), model)), stateTick(model))
-    flyd.on(callMain('settings'), model.settings)
+    flyd.on(ipc('settings'), model.settings)
     flyd.on(m.redraw, model.route)
 
     const credentials = defaultServer(model.servers())
 
     // init app
     if (credentials) {
-        return App.signIn(credentials)
-            .then(App.refresh)
-            .catch(() => App.routeTo('login', { state: R.tap(undefault)(credentials) }))
+        return App.signIn(credentials).catch(() => App.routeTo('login', { state: R.tap(undefault)(credentials) }))
     }
     else {
         return App.routeTo('login')

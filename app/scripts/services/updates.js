@@ -1,7 +1,6 @@
 import { ipcRequest } from '../services/ipc'
 import flyd from 'flyd'
 import R from 'ramda'
-import m from 'mithril'
 
 const tapNil = (fn) => R.compose(R.always(null), fn)
 const values = flyd.scan(R.flip(R.append), [])

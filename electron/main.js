@@ -1,19 +1,20 @@
 'use strict'
 
-const { app, BrowserWindow, Tray, Menu, ipcMain, nativeImage } = require('electron')
+const { app, Tray, BrowserWindow, Menu, ipcMain, nativeImage } = require('electron')
 const { checkUpdates, installUpdate } = require('./lib/updater')
 const paths = require('./lib/paths')
 const pkg = require('./package.json')
+const moment = require('moment')
 const R = require('ramda')
 const trayTemplate = require('./menus/traymenu')
 const appMenuTemplate = require('./menus/appmenu')
 const env = require('./lib/env')
 const mapIndexed = R.addIndex(R.map)
-
 if (require('./lib/squirrel')) { app.quit() }
 
 let appWindow = null,
     bookmarks = [],
+    buildingJobs = [],
     settings = null,
     tray = null
 
@@ -25,12 +26,22 @@ app.setName(pkg.title)
 global.shared = R.pick(['title', 'version', 'author', 'homepage'], pkg)
 global.shared.platform = process.platform
 
-// TODO! Rebuild on window close
-app.rebuildTray = () => tray.setContextMenu(R.apply(buildTrayMenu, [appWindow, bookmarks]))
+app.rebuildTray = () => tray.setContextMenu(R.apply(buildTrayMenu, [appWindow, bookmarks, buildingJobs]))
 app.toggleVisible = () => {
     appWindow.isVisible() ? appWindow.hide() : appWindow.show()
     app.rebuildTray()
 }
+
+// const calcBuildDuration = (build) => Math.min((moment().valueOf() - build.timestamp) / build.estimatedDuration * 100, 100)
+// const isJobFinished = R.propEq('progress', 100)
+
+// ipcMain.on('building', (e, jobs) => {
+//     jobs = jobs.map((i) => ({ label: i.name + ' - ' + Math.round(calcBuildDuration(i.lastBuild)) + '%', progress: Math.round(calcBuildDuration(i.lastBuild))}))
+//     let [finished, building] = R.partition(isJobFinished, jobs)
+//     buildingJobs = building
+//     finished.map((i) => console.log('Finished', i))
+//     app.rebuildTray()
+// })
 
 ipcMain.on('settings', (e, s) => {
     settings = s

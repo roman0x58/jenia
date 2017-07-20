@@ -1,36 +1,45 @@
 'use strict'
 
 import R from 'ramda'
-import Task from './task'
 import flyd from 'flyd'
 import m from 'mithril'
 import { checkPaths } from './util'
 import dispatcher from '../dispatcher'
+import { ipc } from '../services/ipc'
+import { calcBuildDuration } from '../views/joblist'
+import { dropRepeatsWith } from 'flyd/module/droprepeats'
+import filter from 'flyd/module/filter'
+import afterSilence from 'flyd/module/aftersilence'
 
-const inBuilding = R.pathEq(['lastBuild', 'building'], true)
-const inQueue = R.pathEq(['inQueue'], true)
+const call = (...fns) => R.apply(R.pipeP, R.prepend(() => Promise.resolve(m.redraw()), R.map((fn) => () => dispatcher.dispatch(fn), fns)))()
 
-const checkBuildingJobs = R.ifElse(R.isArrayLike, R.any(inBuilding), inBuilding)
-const checkQueueJobs = R.ifElse(R.isArrayLike, R.any(inQueue), inQueue)
+export const refreshImmediate = () => call('updateQueue', 'checkBuilding')
+export const refresh = (model, route) => {
+    const eq = p => R.equals(route().name, p)
 
-const refresh = (model) => {
-    const pairs = {
-        jobs : R.pair(model.jobs, 'updateView'),
-        job  : R.pair(model.job, 'updateJob')
-    }
-    return R.ifElse(R.flip(checkPaths)(R.keys(pairs)), R.uncurryN(1, (route, queue, force) => {
-        let [dep, fn] = R.prop(R.prop('name', route()), pairs)
+    const scanned = flyd.scan(R.compose(R.takeLast(2), R.flip(R.append)), [], dropRepeatsWith(R.equals, model.building))
+    const finished = filter(R.complement(R.isEmpty), scanned.map(R.ifElse(R.compose(R.equals(2), R.length), R.apply(R.difference), R.always([]))))
 
-        let inBuilding = checkBuildingJobs(dep())
-        let inQueue = R.or(checkQueueJobs(dep()), !R.isEmpty(queue()))
-        let dispatch = dispatcher.dispatch
+    const localRoute    = afterSilence(2000, filter(R.flip(checkPaths)(['jobs', 'job']), route))
+    const localQueue    = filter(R.complement(R.isEmpty), afterSilence(1000, model.queue).map(R.flatten))
+    const localBuilding = filter(R.complement(R.isEmpty), afterSilence(5000, model.building).map(R.flatten))
 
-        console.log(`[rtask] check task with fn ${fn}`, R.or(inBuilding, inQueue))
-        if (R.or(inBuilding, inQueue) || R.equals(force, true)) {
-            return (inQueue || R.equals(force, true) ? dispatch('updateQueue').then(() => dispatch(fn)) : dispatch(fn)).then(m.redraw)
+    finished.map(() => {
+        if (eq('jobs')) call('updateView')
+        if (eq('job')) call('updateJob')
+    })
+
+    localRoute.map(() => call('updateQueue', 'checkBuilding'))
+    localQueue.map(() => call('updateQueue', 'checkBuilding'))
+    localBuilding.map((jobs) => {
+        const inBuilding = build => R.any(R.pathEq(['number'], build.number), jobs)
+        if (eq('job')) {
+            R.any(inBuilding, model.job().builds) ? call('checkBuilding') : call('updateJob', 'checkBuilding')
         }
-    }), R.identity)
+        if (eq('jobs')) {
+            const wasUpdated = R.propSatisfies(inBuilding, 'lastBuild')
+            R.any(wasUpdated, model.jobs()) ? call('checkBuilding') : call('updateView', 'checkBuilding')
+        }
+    })
+    return [localRoute, localQueue, localBuilding]
 }
-
-export const refreshAppImmidiately = (model, route) => refresh(model)(route, model.queue, true)
-export const refreshApp = (model, route) => flyd.immediate(flyd.combine(Task(R.binary(refresh(model)), 4000).run, [route, model.queue]))
