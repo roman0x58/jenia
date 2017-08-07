@@ -23,7 +23,7 @@
         box-sizing border-box
         lost-flex-container column
         lost-column 2/3 flex
-    &__change-set
+    &__tab-content
         flex 0 0 auto
         max-height 170px
         overflow hidden
@@ -41,14 +41,20 @@
         font-size 11px
         line-height 16px
         &--hidden
-            display none
+            visibility hidden
     &__builds
         animation slideIn .2s forwards ease-out
         overflow-y scroll
         position relative
         height 100%
         lost-column 1/3 flex
-
+    &__parameters
+        inline-dl()
+        dt
+            color #333
+        dd
+            text-transform uppercase
+            font-weight bold
     &__action
         @extend .jn-actions__action
             
@@ -81,6 +87,8 @@
         cursor pointer
         padding 10px
         border-left 5px solid transparent
+        &--fade-in
+            animation fadeIn .5s
         &:hover
             background #f7f7f7
         &--active

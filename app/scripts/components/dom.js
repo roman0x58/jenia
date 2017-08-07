@@ -2,7 +2,7 @@
 
 import R from 'ramda'
 
-export default {
+const dom = {
     css: (dom, styles) => R.forEach((k) => dom.style[k] = styles[k], R.keys(styles)),
     cls: (el, cls, enable) => {
         el = el.dom || el
@@ -13,7 +13,11 @@ export default {
         }
 
     },
-    mod: (el, mod, enable) => {
+    switch: R.curry((mod1, mod2, el) => {
+        dom.mod(mod1, el, false)
+        dom.mod(mod2, el)
+    }),
+    mod: R.curryN(2, (mod, el, enable) => {
         el = el.dom || el
         if (R.equals(enable, false)) {
             let cls = R.last(el.classList)
@@ -23,5 +27,7 @@ export default {
             el.classList.add(`${cls}--${mod}`)
         }
         return el
-    }
+    })
 }
+
+export default dom

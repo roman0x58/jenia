@@ -5,6 +5,10 @@ import m from 'mithril'
 import R from 'ramda'
 import { Maybe } from 'ramda-fantasy'
 import URI from 'urijs'
+import logFactory from 'loglevel'
+
+const log = logFactory.getLogger('jenkins')
+log.setLevel('warn')
 
 const JenkinsException = function (message, request) {
     this.message = message
@@ -55,7 +59,7 @@ let callApi = function (login, password, uri, issuer, path, options, segment = '
         }
     }, options))
         .then(R.tap(() => { if (!options.background) { mask.hide() } }))
-        .then(R.tap((r) => console.log(`[request, background=${!!options.background}] URL - ${uri.path()} Response`, r)))
+        .then(R.tap((r) => log.debug(`[request, background=${!!options.background}] URL - ${uri.path()} Response`, r)))
         .catch((err) => {
             if (!options.background) {
                 mask.hide()

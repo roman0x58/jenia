@@ -31,7 +31,7 @@ export const serverIndex = (credentials) => R.findIndex(serverPredicate(credenti
 export const findServer = (credentials) => R.find(serverPredicate(credentials), AppModel.servers())
 export const defaultServer = R.find(R.propEq('default', true))
 
-const history = R.compose(flyd.scan(R.compose(R.takeLast(2), R.flip(R.append)), []), dropRepeatsWith(R.eqProps('name')))
+const history = R.compose(flyd.scan(R.compose(R.takeLast(2), R.flip(R.append)), []), dropRepeatsWith(R.equals))
 AppModel.history = history(AppModel.route)
 
 export default AppModel

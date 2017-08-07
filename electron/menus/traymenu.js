@@ -2,7 +2,7 @@
 
 const R = require('ramda')
 
-module.exports = (app, win, bookmarks = [], jobs = []) => {
+module.exports = (app, win, bookmarks = []) => {
     let template = [
         {
             label: 'Bookmarks',
@@ -46,16 +46,6 @@ module.exports = (app, win, bookmarks = [], jobs = []) => {
             }
         }
     ]
-
-    if (jobs.length > 0) {
-        template = R.flatten([
-            { label: 'Current buildings', disabled: true },
-            { type: 'separator' },
-            jobs,
-            { type: 'separator' },
-            template
-        ])
-    }
 
     return template
 }

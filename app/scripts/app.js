@@ -8,6 +8,7 @@ import flyd from 'flyd'
 
 import AppModel from './models/app'
 import { createModel } from './models/jenkins'
+import { logFactory } from './components/util'
 
 // Components
 import notifications from './components/notifications'
@@ -36,6 +37,8 @@ import mergeAll from 'flyd/module/mergeall'
 localforage.config({ driver: localforage.LOCALSTORAGE })
 
 export const shared = window.shared
+const log = logFactory.getLogger('app')
+log.setLevel('warn')
 
 const browserWindow = window.currentWindow
 
@@ -153,7 +156,7 @@ const storeAppModel = (model) =>
         if (model.jenkins()) {
             const credentials = findServer(model.jenkins().credentials())
             if (credentials) {
-                console.log('[state] save for credentials ', credentials)
+                log.debug('[state] save for credentials ', credentials)
                 localforage.setItem(stateKey(credentials), R.equals(credentials.default, R.T()) ? R.omit(['jenkins'], model) : R.pick(['bookmarks'], model))
             }
         }
@@ -240,7 +243,7 @@ const stateTick = R.compose(afterSilence(50), mergeAll, streamsOf)
 
 // restore :: object -> object -> object
 const restore = R.curry((model, state) => {
-    console.log('[state] restore', state)
+    log.debug('[state] restore', state)
     R.forEachObjIndexed((v, k) => {
         const mValue = model[k]
         if (flyd.isStream(mValue)) {
@@ -271,7 +274,9 @@ const initApp = (model) => {
         return App.routeTo('login')
     }
 }
-
+window.m = m
+window.Maybe = Maybe
+window.AppModel = AppModel
 localforage.getItem('app')
     .then(restore(AppModel))
     .then(initApp)

@@ -25,16 +25,17 @@ export const createModel = () => collectionMixin({
     building     : flyd.stream(),
 
     checkBuilding(){
-        let query = ['computer[executors[currentExecutable[number,timestamp]],oneOffExecutors[currentExecutable[number,timestamp]]]']
+        let query = ['computer[executors[currentExecutable[number,timestamp,url]],oneOffExecutors[currentExecutable[number,timestamp,url]]]']
         return this.jenkins().req('computer', makeQuery(query, { background: true }))
             .then(pluckJobs)
+            .then(R.map((i) => R.assoc('name', /https?:\/\/.+job\/(.+?)\//g.exec(i.url)[1] , i)))
             .then(this.building)
     },
 
     // -------------- View
     setView(view, opts = {}) {
         let viewQuery = ['jobs[lastSuccessfulBuild[timestamp],name,url,color,inQueue,actions[parameterDefinitions[*,defaultParameterValue[*]]]',
-            'lastBuild[building,timestamp,estimatedDuration,number]]']
+            'lastBuild[building,timestamp,estimatedDuration,number,result]]']
 
         return this.jenkins().req('view/' + view.name, makeQuery(viewQuery, opts))
             .then(R.compose(this.jobs, R.prop('jobs')))
@@ -47,11 +48,11 @@ export const createModel = () => collectionMixin({
     },
 
     updateView() {
-        return this.setView(this.view(), { background: true }).then(m.redraw)
+        return this.setView(this.view(), { background: true }).then(R.tap(m.redraw))
     },
 
     updateJob() {
-        return this.setJob(this.job(), { background: true }).then(m.redraw)
+        return this.setJob(this.job(), { background: true }).then(R.tap(m.redraw))
     },
 
     // -------------- Queue
@@ -69,7 +70,7 @@ export const createModel = () => collectionMixin({
 
     // -------------- Build
     getBuild(job, buildNumber, opts) {
-        let q = ['actions[buildsByBranchName[buildNumber,revision[SHA1]]]',
+        let q = ['actions[parameters[*],buildsByBranchName[buildNumber,revision[SHA1]]]',
             'result,timestamp,number,duration,estimatedDuration',
             'changeSet[*[affectedPaths,commitId,author[fullName],msg]]']
 
@@ -85,7 +86,7 @@ export const createModel = () => collectionMixin({
     // -------------- Job
 
     setJob(job, opts = {}) {
-        let q = 'builds[number,result,timestamp,building,duration,estimatedDuration],name,inQueue,lastBuild[number,building],actions[parameterDefinitions[*,defaultParameterValue[*]]]'
+        let q = 'builds[number,result,timestamp,building,duration,estimatedDuration],name,inQueue,lastBuild[number,building,result],actions[parameterDefinitions[*,defaultParameterValue[*]]]'
 
         return this.jenkins().req(`job/${job.name}`, makeQuery(q, opts))
             .then((job) => Maybe(job.lastBuild)
@@ -114,10 +115,10 @@ export const createModel = () => collectionMixin({
         const stop = () => stopped = true
         const puller = (consumer, start, opts) =>
             this.getLogText(job, buildNumber, start, opts)
-                .then((out) => {
-                    consumer(out.logText)
-                    if (R.and(R.equals(out.more, true), !stopped)) {
-                        setTimeout(() => puller(consumer, out.size, { background: true }), 1000)
+                .then(R.tap(R.compose(consumer, R.prop('logText'))))
+                .then((response) => {
+                    if (R.and(R.equals(response.more, true), !stopped)) {
+                        setTimeout(() => puller(consumer, response.size, { background: true }), 1000)
                     }
                     else {
                         consumer.end(true)
@@ -135,7 +136,6 @@ export const createModel = () => collectionMixin({
     // -------------- Initialization
 
     init(credentials) {
-        console.log('[jenkins] Initialize jenkins with credentials', credentials)
         const processResponse = R.tap(R.compose(this.views, R.prop('views')))
         return jenkins(credentials)
             .then(this.jenkins)
