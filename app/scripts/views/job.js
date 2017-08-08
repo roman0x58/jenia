@@ -109,7 +109,7 @@ export const Job = {
                 ]),
                 tabs.length > 1 ? m('div.jn-job__tab-menu.jn-button-group', tabs
                     .map(R.head)
-                    .map((i) => m('button.jn-button-sm.jn-button-sm--blue',
+                    .map((i) => m('button.jn-button-sm.jn-button-sm--white',
                         {
                             class: util.classy({ 'jn-button-sm--active': R.equals(i, state.tab) }),
                             onclick: () => state.tab = i

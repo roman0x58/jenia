@@ -6,6 +6,7 @@
     font-size 14px
     padding 10px 15px
     border-radius 2px
+    position relative
     &:focus
         outline 0
     &:hover
@@ -18,25 +19,23 @@
     font-size 12px
     
 .jn-button-group
-    margin-bottom 10px
     & > .jn-button,
     & > .jn-button-sm
         border-radius: 0
         &:not(:last-child)
-            border-right: none
+            border-right-color: transparent
 
-button-variant(variant, c)
+button-variant(variant, c, fg = white)
     .jn-button-group
          .jn-button--{variant},
          .jn-button-sm--{variant}
             &.jn-button--active,
             &.jn-button-sm--active
                 background c
-                color white
+                color fg
             &:hover
-                border-color transparent
                 background lighten(c, 10%)
-                color white
+                color fg
                    
     .jn-button--{variant},
     .jn-button-sm--{variant}
@@ -48,5 +47,5 @@ button-variant(variant, c)
             color darken(c, 15%)  
 
 button-variant('green', $cl.green)
-button-variant('white', #999)
+button-variant('white', #eee, #00c9bd)
 button-variant('blue', $cl.blue)
