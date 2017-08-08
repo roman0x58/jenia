@@ -1,13 +1,12 @@
 .jn-modal
-  absolute top 50% left 50%
+  fixed top 50% left 50%
   width 50%
   max-width 630px
   min-width 320px
-  height auto
+  height auto !important
   z-index 2000
   visibility hidden
-  backface-visibility hidden
-  transform translate(-50%, -50%)
+  transform translate(-50%, -50%) 
   &__wrapper
     border 1px solid #eee
     position relative
@@ -18,7 +17,7 @@
   &__content
     max-height 500px
     overflow-y scroll
-    
+      
   &__header
     position relative
     border-bottom 1px solid $app-color-light-gray

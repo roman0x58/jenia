@@ -5,9 +5,11 @@ import { Maybe } from 'ramda-fantasy'
 import util from '../components/util'
 import { streamify } from '../components/util'
 import moment from 'moment'
+import { Tip } from '../components/tooltip'
 import flyd from 'flyd'
 import { calcBuildDuration, Actions } from './joblist'
-import filter from 'flyd/module/filter'
+import $filter from 'flyd/module/filter'
+import modal from '../components/modal'
 
 // build number is build
 const isBuildActive = (selected, build) => selected.map(R.prop('number')).map(R.equals(R.prop('number', build))).getOrElse(false)
@@ -25,6 +27,9 @@ const assocParamses = (build) => R.assoc('paramses', R.flatten(R.reject(R.isNil,
 const cook = R.lift(R.compose(R.omit(['actions', 'changeSet']), assocParamses, assocBranch, assocChanges), Maybe)
 const assocLogText = R.curry((build, logText) => build.map(R.assoc('console', logText)))
 const cancelLog = (build) => build().chain(v => Maybe(R.prop('console', v))).map(v => v.end(true))
+const letters = R.compose(R.toUpper, R.transduce(R.map(R.take(1)), R.concat, ''), R.split(/\s|\./))
+const pallete = ['1F4E5F', 'e74c3c', 'F5AB35', '571EC3', '52616B', '1F4E5F']
+const colors = R.memoize(() => '#' + pallete[Math.floor(Math.random()*pallete.length)])
 
 export const Console = {
     view({ attrs }) {
@@ -45,12 +50,36 @@ const Changes = {
     view({ attrs: { selected } }) {
         const num = selected.map(R.prop('number'))
         return m('div.jn-job__change-set', selected.chain(R.prop('changes')).map((c) => [
-            m('h4.jn-job__change-set-title', 'Last 5 commit messages'),
-            m('ul.jn-job__change-set-list', R.take(5, c).map((i) =>
+            // m('h4.jn-job__change-set-title', 'Last 5 commit messages'),
+            m('ul.jn-job__change-set-list', c.map((i) =>
                 m('li.jn-job__commit', [
-                    m('span.jn-job__commit-id.jn-label', util.svg('git-commit'), R.take(7, i.commitId)),
+                    Tip.with(m('span.jn-job__commit-id.jn-label', {
+                        onclick: () => modal.show({
+                            title: 'Affected paths',
+                            class: 'jn-job-affected-paths__modal',
+                            body: util.toM(() => {
+                                return m('ul.jn-job-affected-paths', R.sortBy(R.prop('editType'), i.paths).map(e => {
+                                    const svg = flyd.stream()
+                                    switch(e.editType){
+                                        case 'add': svg('diff-added')
+                                            break
+                                        case 'delete': svg('diff-removed')
+                                            break
+                                        case 'edit': svg('diff-modified')
+                                            break
+                                        default: svg('diff')
+                                    }
+                                    return m('li.jn-job-affected-paths__path', util.svg(svg(), 'jn-job-affected-paths__icon jn-job-affected-paths__icon--' + e.editType), e.file)
+                                }))
+                            })
+                        })
+                    }, [
+                        util.svg('git-commit'),
+                        R.take(7, i.commitId),
+                        m('span.jn-job__commit-author', { style: { color: colors(letters(i.author.fullName)) } } ,letters(i.author.fullName))
+                    ]), moment(i.timestamp).format('DD MMM kk:mm') + '<br/>' + i.author.fullName),
                     m('span.jn-job__commit-msg', i.msg),
-                    m('span.jn-job__commit-author', `<${i.author.fullName}>`),
+                    m('span.jn-job__commit-author', ),
                 ]))
             )
         ]).getOrElse(num.isJust ? 'No changes detected' : 'This job doesn\'t have any builds yet'))
@@ -70,7 +99,7 @@ export const Job = {
     consoleToggle(state, dispatcher) {
         state.console(!state.console())
         if (state.selected().isJust && R.equals(state.console(), true)) {
-            flyd.combine((log, $s) => R.juxt([cancelLog, $s.end])(state.selected, true), [filter(R.equals(false), state.console)])
+            flyd.combine((log, $s) => R.juxt([cancelLog, $s.end])(state.selected, true), [$filter(R.equals(false), state.console)])
             dispatcher
                 .dispatch('pullLog', state.job(), state.selected().chain(R.prop('number')))
                 .then(assocLogText(state.selected()))
@@ -107,13 +136,13 @@ export const Job = {
                         }
                     }) : null
                 ]),
-                tabs.length > 1 ? m('div.jn-job__tab-menu.jn-button-group', tabs
+                m('div.jn-job__tab-menu.jn-button-group', tabs
                     .map(R.head)
-                    .map((i) => m('button.jn-button-sm.jn-button-sm--white',
+                    .map((i) => m('button.jn-button-sm.jn-button-sm--smoke',
                         {
                             class: util.classy({ 'jn-button-sm--active': R.equals(i, state.tab) }),
                             onclick: () => state.tab = i
-                        }, i))) : null,
+                        }, i))),
                 m('div.jn-job__tab-content', m(R.prop(state.tab, R.fromPairs(tabs)), { selected })),
                 Maybe.maybe(null, logText =>
                     m(Console, { class: util.classy({ 'jn-job__console--hidden': !(state.console()) }), logText })

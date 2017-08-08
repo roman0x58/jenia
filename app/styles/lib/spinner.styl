@@ -13,14 +13,10 @@
 
   border: 0.5em solid rgba($cl.green, 0.2)
   border-top-color: rgba($cl.green, 0.7)
-  // border-left-color #ffffff
 
-  -webkit-transform translateZ(0)
-  -ms-transform translateZ(0)
   transform translateZ(0)
 
-  -webkit-animation spin 0.8s infinite linear
-  animation spin 0.8s infinite linear
+  animation spin 0.8s infinite cubic-bezier(.4,.13,.2,.82) 
    
   visibility hidden
   &--show

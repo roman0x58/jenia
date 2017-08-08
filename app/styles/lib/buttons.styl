@@ -25,27 +25,32 @@
         &:not(:last-child)
             border-right-color: transparent
 
-button-variant(variant, c, fg = white)
+button-variant(variant, bscolor, fg = white, hborder = bscolor)
     .jn-button-group
          .jn-button--{variant},
          .jn-button-sm--{variant}
+            color darken(bscolor, 15%)
             &.jn-button--active,
             &.jn-button-sm--active
-                background c
                 color fg
-            &:hover
-                background lighten(c, 10%)
+            &:hover:not(
+                :last-child,
+                .jn-button--active,
+                .jn-button-sm--active)
+                border-right-color hborder
+            &:hover:not(.jn-button-sm--active)
+                background lighten(bscolor, 15%)
                 color fg
                    
     .jn-button--{variant},
     .jn-button-sm--{variant}
         background transparent
-        border 1px solid c
-        color c
+        border 1px solid bscolor
+        color bscolor
         &:hover
-            border-color darken(c, 15%) 
-            color darken(c, 15%)  
+            border-color hborder
+            color darken(bscolor, 15%)  
 
 button-variant('green', $cl.green)
-button-variant('white', #eee, #00c9bd)
+button-variant('smoke', #eee, $cl.blue)
 button-variant('blue', $cl.blue)

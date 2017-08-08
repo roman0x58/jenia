@@ -76,7 +76,7 @@ export default {
             m('.jn-tooltip', {
                 class: `jn-tooltip--${config('position')} jn-tooltip--fade-in-${config('position')} ${util.classy(vnode.state.classes)}`
             }, m('.jn-tooltip__wrapper',
-                m('.jn-tooltip__text', config('content'))))
+                m('.jn-tooltip__text', m.trust(config('content')))))
         : null
     }
 }

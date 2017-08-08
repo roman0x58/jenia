@@ -72,7 +72,7 @@ export const createModel = () => collectionMixin({
     getBuild(job, buildNumber, opts) {
         let q = ['actions[parameters[*],buildsByBranchName[buildNumber,revision[SHA1]]]',
             'result,timestamp,number,duration,estimatedDuration',
-            'changeSet[*[affectedPaths,commitId,author[fullName],msg]]']
+            'changeSet[*[paths[*],commitId,author[fullName],msg,timestamp]]']
 
         return this.jenkins().req(`job/${job.name}/${buildNumber}`, makeQuery(q, opts))
     },

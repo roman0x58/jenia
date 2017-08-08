@@ -27,14 +27,15 @@
         margin-bottom -1px
         & > button.jn-button-sm
             &--active
-                background white !important
+                background white 
             border-bottom none
     &__tab-content
         flex 0 0 auto
         max-height 170px
         overflow hidden
         padding 20px
-        border 1px solid #eee       
+        border 1px solid #eee
+        overflow-y scroll
     &__console
         overflow scroll
         lost-row 1
@@ -54,37 +55,62 @@
         position relative
         height 100%
         lost-column 1/3 flex
+    &__change-set
+        .jn-label
+            transition border-color .3s ease-in-out
+            border-color #eee
+            &:hover
+                border-color: inherit
     &__parameters
         inline-dl()
         dt
-            color #333
+            color #999
         dd
-            text-transform uppercase
             font-weight bold
+            color: $cl.blue
     &__action
         @extend .jn-actions__action
-            
     &__actions
         @extend .jn-actions
         &--hidden 
             display none
     	&-list
             height 100%
-
+    &-affected-paths
+        font-size 12px
+        &__modal
+            .jn-modal__content
+                padding 0
+        &__icon
+            margin-right 5px
+            fill: $cl.blue
+            &--add
+                fill: $cl.green
+            &--delete
+                fill: $cl.red
+        &__path
+            background: $cl.light-gray
+            padding 5px
+            &:nth-child(odd)
+                background: $cl.light-blue
     &__commit
         font-size 12px
         margin-bottom 5px
         display flex
         align-items center
         &-author
-            color $app-color-gray
-            margin-left 5px
+            text-align right
+            margin-left auto
+            color: $cl.gray
             font-weight bold
         &-msg
             margin-left 5px
+            line-height 18px
         &-id
+            user-select none
+            cursor pointer
             font-weight bold
-            min-width 60px
+            min-width 75px
             border 1px solid
             color: $cl.blue
             fill: $cl.blue

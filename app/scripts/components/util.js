@@ -6,9 +6,9 @@ import logLevel from 'loglevel'
 import { Maybe } from 'ramda-fantasy'
 
 export const transform = R.curry((func, stream) => R.compose(stream, func, R.call)(stream))
-export const del = R.compose(transform, R.without, R.of)
-export const update = R.compose(transform, R.update)
-export const add = R.compose(transform, R.append)
+export const $rm = R.compose(transform, R.without, R.of)
+export const $update = R.compose(transform, R.update)
+export const $add = R.compose(transform, R.append)
 export const expandPath = (pathName, target) => pathName.split('.').reduce((model, path) => model[path], target)
 export const withProps = (props, fn) => R.compose(
     R.apply(fn),
@@ -60,17 +60,17 @@ const log = logLevel.getLogger('app')
 export const collectionMixin = (target) => R.merge(target, ({
     add(pathName, item) {
         log.debug(`[collection] Adding an item from ${pathName}`, item)
-        return add(item)(expandPath(pathName, target))
+        return $add(item)(expandPath(pathName, target))
     },
 
     del(pathName, item) {
         log.debug(`[collection] Removing an item from ${pathName}`, item)
-        return del(item)(expandPath(pathName, target))
+        return $rm(item)(expandPath(pathName, target))
     },
 
     update(pathName, item, idx) {
         log.debug(`[collection] Updating an item from ${pathName}`, item)
-        return update(idx, item)(expandPath(pathName, target))
+        return $update(idx, item)(expandPath(pathName, target))
     },
 
     addOrUpdate(pathName, item, predicate) {

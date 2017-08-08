@@ -3,7 +3,7 @@
 import m from 'mithril'
 import R from 'ramda'
 import util from './util'
-import { add, update, del, promisify } from './util'
+import { $add, $update, $rm, promisify } from './util'
 import flyd from 'flyd'
 import dom from './dom'
 
@@ -16,17 +16,17 @@ const state = {
     items: flyd.stream([]),
     del(i) {
         animateOnRemove = true
-        del(i)(state.items)
+        $rm(i)(state.items)
     },
     add(message, type) {
         let n = { message, type, id: util.id() }
         setTimeout(() => state.del(n), 5000)
         if (state.items().length >= state.max) {
             animateOnRemove = false
-            return update(state.max - 1, n)(state.items)
+            return $update(state.max - 1, n)(state.items)
         }
 
-        return add(n)(state.items)
+        return $add(n)(state.items)
     }
 }
 
