@@ -1,4 +1,13 @@
 # Jenia Change log
+## [0.1.3] - 2017-08-09
+### Added
+    - Notifications for succeded/aborted/failed builds (desktop notification will be implemented in the future)
+    - Additional information on the build page such as a build parameters, git affected paths, commit date
+    - Now the all git commits will be shown show on a changes tab
+    - Some ui/ux improvements
+    - Added `loglevel` lib as an application logging system
+### Fixed
+    - Refactored the application background refresh task
 ## [0.1.2] - 2017-05-28
 ### Added
     - Refresh the application when it has been shown from background

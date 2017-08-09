@@ -277,6 +277,7 @@ const initApp = (model) => {
 window.m = m
 window.Maybe = Maybe
 window.AppModel = AppModel
+window.n = notifications
 localforage.getItem('app')
     .then(restore(AppModel))
     .then(initApp)

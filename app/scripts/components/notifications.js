@@ -18,8 +18,8 @@ const state = {
         animateOnRemove = true
         $rm(i)(state.items)
     },
-    add(message, type) {
-        let n = { message, type, id: util.id() }
+    add(message, type, attrs = {}) {
+        let n = { message, type, id: util.id(), attrs }
         setTimeout(() => state.del(n), 5000)
         if (state.items().length >= state.max) {
             animateOnRemove = false
@@ -36,14 +36,22 @@ const notification = {
     onbeforeremove: R.when(() => animateOnRemove, promisify(dom.switch('fade-in', 'fade-out'), 300)),
     oncreate: dom.mod('fade-in'),
     view({ attrs }) {
-        return m(`section.jn-notify.jn-notify--${attrs.type}`, { key: attrs.key }, [
+        const baseOpts = { key: attrs.key }
+        if (R.is(Function, attrs.onnotifyclick)) {
+            baseOpts.style = { cursor: 'pointer' }
+            baseOpts.onclick = (e) => {
+                e.stopPropagation()
+                attrs.onnotifyclick(e)
+            }
+        }
+        return m(`section.jn-notify.jn-notify--${attrs.type}`, baseOpts, [
             m('span.jn-notify__message', `${attrs.message}`),
             m('span.jn-notify__close-tool', { onclick: attrs.onclick }, util.svg('x'))
         ])
     }
 }
 
-const notifications = R.merge(convert((i) => (message) => state.add(message, i), types), {
+const notifications = R.merge(convert((i) => (message, attrs) => state.add(message, i, attrs), types), {
     oninit({ attrs }) {
         if (attrs.max) {
             state.max = attrs.max
@@ -51,7 +59,7 @@ const notifications = R.merge(convert((i) => (message) => state.add(message, i),
     },
     view() {
         return m('div.jn-notifications', state.items().map((i) => m(notification, {
-            message: i.message, type: i.type, onclick: () => state.del(i), key: i.id
+            message: i.message, type: i.type, onclick: () => state.del(i), key: i.id, onnotifyclick: i.attrs.onclick
         }), state.items()))
     }
 })
