@@ -1,7 +1,7 @@
 {
   "name": "jenia",
   "title": "Jenia",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Jenia is a simple cross-platform GUI client for Jenkins CI. Built on Electron.",
   "homepage": "https://jenia.pl/",
   "repository": {
