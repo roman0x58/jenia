@@ -15,7 +15,7 @@ let gulp = require('gulp'),
     browserify = require('browserify'),
     watchify = require('watchify'),
     babelify = require('babelify'),
-    publish = require('gh-publish'),
+    release = require('gh-release'),
     hbsfy = require('hbsfy'),
     nib = require('nib'),
     fs = require('fs'),
@@ -136,7 +136,7 @@ gulp.task('publish', (done) => {
     const githubToken = $.util.env.token
     if (!githubToken) throw new Error('GitHub token must be set!')
 
-    return publish({
+    return release({
         repo: pkg.name,
         owner: 'roman0x58',
         auth: {
