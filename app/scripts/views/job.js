@@ -125,7 +125,7 @@ export const Job = {
         const logIsActive = Maybe.maybe(false, R.compose(R.not, streamify(Boolean), R.prop('end')))(logText)
         const tabs = R.when(() => selected.map(R.prop('paramses')).chain(R.length) > 0, R.append(ParamsesTab))([ChangesTab])
 
-        return m('.jn-job', { class: util.classy({ 'jn-job--console-active': logIsActive }) }, [
+        return m('.jn-job', { class: util.classy({ 'jn-job--console-active': logIsActive }), key: util.id() }, [
             m('.jn-job__current',
                 m('.jn-job__info', [
                     m('h3.jn-job__title', `${name} - ${num.map(String).map(R.concat('#')).getOrElse('No builds yet')}`),

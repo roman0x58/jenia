@@ -102,7 +102,6 @@ const Layout = {
             m(Tool, { onclick: () => browserWindow.close(), svg: 'x' }),
             m(Tool, { onclick: () => browserWindow.minimize(), svg: 'dash' })
         ]
-
         return [
             m(`.jn-application.jn-application--${shared.platform}.jn-container`, {
                 class: u.classy({
@@ -116,7 +115,7 @@ const Layout = {
                         m('ul.jn-titlebar__tools-right.jn-tools', rTools)
                     ]),
                     m(notifications),
-                    vnode.attrs.content,
+                    vnode.children,
                     m(modal),
                     m(mask),
                     m('.jn-overlay')
@@ -143,12 +142,6 @@ ipcRenderer.on('build', (e, v) => App.model.runBuild(v.job, v.job.paramses)
 )
 ipcRenderer.on('route', (e, v) => App.routeTo(v.path, v.attrs))
 
-// makeRoute :: (object -> [*]) -> route *
-const makeRoute = R.curry(R.memoize((fn, a) => R.partial(fn, [a || {}])))
-
-// applyRoute :: { name: string, route: route * } -> *
-const applyRoute = R.compose(R.always, R.assoc('content', R.__, {}), R.call, (r) => R.prop(r.name, App.routes)(r.attrs))
-
 // statekey :: object -> string
 const stateKey = (credentials) => 'appmodel-' + credentials.server + credentials.login
 const storeAppModel = (model) =>
@@ -168,7 +161,7 @@ const undefault = (server) => dispatcher.dispatch('settings.default', server, fa
 
 const App = {
     routeTo(r, attrs) {
-        return AppModel.route({ 'name': r, 'attrs': attrs })
+        return AppModel.route({ 'name': r, 'attrs': R.merge(attrs, { key: u.id('view') }) })
     },
     back() {
         return AppModel.route(R.head(AppModel.history()))
@@ -178,7 +171,7 @@ const App = {
     },
 
     showJob(j) {
-        return dispatcher.dispatch('setJob', j).then(() => App.routeTo('job', { active: viewIndex(App.model.view()) }))
+        return dispatcher.dispatch('setJob', j).then(() => App.routeTo('job', { active: viewIndex(App.model.view())}))
     },
 
     signIn(credentials) {
@@ -216,25 +209,26 @@ const App = {
         if (App.model) refreshImmediate(App.model)
     },
     routes: {
-        job: makeRoute((attrs) => [
+        job: (attrs) => [
             m(Header, m(JobViews, R.merge(attrs, { views: App.model.views, onclick: App.changeView }))),
-            m(Body, m(Job, { job: App.model.job, dispatcher: dispatcher })),
+            m(Body, m(Job, { job: App.model.job, dispatcher: dispatcher, key: attrs.key })),
             m(Footer, m(Queue, { queue: App.model.queue, dispatcher: dispatcher }))
-        ]),
-        jobs: makeRoute((attrs) => [
+        ],
+        jobs: (attrs) => [
             m(Header, m(JobViews, R.merge(attrs, { views: App.model.views, onclick: App.changeView }))),
             m(Body, m(JobList, { jobs: App.model.jobs, dispatcher: dispatcher, onclick: App.showJob })),
             m(Footer, m(Queue, { queue: App.model.queue, dispatcher: dispatcher }))
-        ]),
-        settings: makeRoute((attrs) => [
+        ],
+        settings: (attrs) => [
             m(Body, m(Settings, R.merge(attrs, { model: AppModel, bookmarks: Maybe(App.model).map(R.prop('bookmarks')) })))
-        ]),
-        login: makeRoute((attrs) => [
+        ],
+        login: (attrs) => [
             m(Body, m(Login, R.merge(attrs, { settings: AppModel, onsubmit: App.onLogin })))
-        ])
+        ]
     },
     view() {
-        return m(Layout, applyRoute(AppModel.route())())
+        const cur = AppModel.route()
+        return m(Layout, App.routes[cur.name](cur.attrs))
     }
 }
 
