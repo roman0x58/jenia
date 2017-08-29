@@ -1,6 +1,5 @@
 'use strict'
 
-import localforage from 'localforage'
 import m from 'mithril'
 import R from 'ramda'
 import { Maybe } from 'ramda-fantasy'
@@ -33,8 +32,6 @@ import { Queue } from './views/queue'
 import { Settings } from './views/settings'
 import afterSilence from 'flyd/module/aftersilence'
 import mergeAll from 'flyd/module/mergeall'
-
-localforage.config({ driver: localforage.LOCALSTORAGE })
 
 export const shared = window.shared
 const log = logFactory.getLogger('app')
@@ -150,7 +147,7 @@ const storeAppModel = (model) =>
             const credentials = findServer(model.jenkins().credentials())
             if (credentials) {
                 log.debug('[state] save for credentials ', credentials)
-                localforage.setItem(stateKey(credentials), R.equals(credentials.default, R.T()) ? R.omit(['jenkins'], model) : R.pick(['bookmarks'], model))
+                localStorage.setItem(stateKey(credentials), JSON.stringify(R.equals(credentials.default, R.T()) ? R.omit(['jenkins'], model) : R.pick(['bookmarks'], model)))
             }
         }
     })
@@ -175,10 +172,10 @@ const App = {
     },
 
     signIn(credentials) {
-        let state = () => localforage.getItem(stateKey(credentials))
+        let state = () => localStorage.getItem(stateKey(credentials))
         let model = createModel()
         return model.init(credentials)
-            .then((response) => Promise.all([state().then(restore(model)), response]))
+            .then((response) => [restore(model, state()), response])
             .then(R.tap(([model]) => {
                 App.model = model
                 App.streams = []
@@ -246,32 +243,28 @@ const restore = R.curry((model, state) => {
         else if (R.is(Object, mValue) && !R.isEmpty(mValue)) {
             restore(v, mValue)
         }
-    }, state)
+    }, JSON.parse(state))
     return model
 })
 
-const initApp = (model) => {
-    // clear bookmarks
+const initApp = () => {
+    const model = restore(AppModel, localStorage.getItem('app'))
     ipc('bookmarks', [])
 
-    flyd.on(() => localforage.setItem('app', R.assoc('history', model.history(), model)), stateTick(model))
+    flyd.on(() => localStorage.setItem('app', JSON.stringify(R.assoc('history', model.history(), model))), stateTick(model))
     flyd.on(ipc('settings'), model.settings)
     flyd.on(m.redraw, model.route)
 
     const credentials = defaultServer(model.servers())
 
-    // init app
     if (credentials) {
         return App.signIn(credentials).catch(() => App.routeTo('login', { state: R.tap(undefault)(credentials) }))
     }
     else {
-        return App.routeTo('login')
+        return Promise.resolve(App.routeTo('login'))
     }
 }
-
-localforage.getItem('app')
-    .then(restore(AppModel))
-    .then(initApp)
+initApp()
     .then(checkForUpdates)
     .then(() => m.mount(document.body, App))
 
