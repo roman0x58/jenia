@@ -4,7 +4,6 @@ import notifications from '../components/notifications'
 import m from 'mithril'
 import R from 'ramda'
 import { Maybe } from 'ramda-fantasy'
-import URI from 'urijs'
 import logFactory from 'loglevel'
 
 const log = logFactory.getLogger('jenkins')
@@ -15,18 +14,15 @@ const JenkinsException = function (message, request) {
     this.request = request
 }
 
-let callApi = function (login, password, uri, issuer, path, options, segment = 'api/json') {
+let callApi = function (login, password, baseUrl, issuer, path, options, segment = 'api/json') {
 
     // es6 default arg caused unpredicted behavior
     options = options || {}
-    uri = uri.clone().path(path)
-
-    if (!R.isEmpty(segment)) {
-        uri.segment(segment)
-    }
-
+    const url = new URL(`${path}/${segment}`, baseUrl)
     if (options.query) {
-        uri.query(options.query)
+        R.forEachObjIndexed((v, k) => {
+            if (!R.isNil(v)) url.searchParams.append(k, v)
+        }, options.query)
         options = R.omit('query', options)
     }
 
@@ -35,7 +31,7 @@ let callApi = function (login, password, uri, issuer, path, options, segment = '
     }
 
     return m.request(R.merge({
-        url: uri.toString(),
+        url: url,
         method: 'GET',
         background: options.background,
         extract: function (xhr) {
@@ -59,37 +55,32 @@ let callApi = function (login, password, uri, issuer, path, options, segment = '
         }
     }, options))
         .then(R.tap(() => { if (!options.background) { mask.hide() } }))
-        .then(R.tap((r) => log.debug(`[request, background=${!!options.background}] URL - ${uri.path()} Response`, r)))
+        .then(R.tap((r) => log.debug(`[request, background=${!!options.background}] URL - ${url.path} Response`, r)))
         .catch((err) => {
             if (!options.background) {
                 mask.hide()
                 if (options.notify !== false) {
-                    notifications.error(`An error occured while connecting to jenkins server ${uri.hostname()}... ${err.message}`)
+                    notifications.error(`An error occured while connecting to jenkins server ${url.host}... ${err.message}`)
                 }
             }
             throw err
         })
 }
 
+const createUrl = (url) => {
+    if (!url.startsWith('http')) {
+        return new URL('http://' + url)
+    }
+    return new URL(url)
+}
+
 export default function (options) {
-    let uri = new URI(options.server)
-
-    if (R.isEmpty(uri.scheme())) {
-        uri = uri
-            .scheme('http')
-            .hostname(options.server)
-    }
-
-    if (R.isEmpty(uri.port())) {
-        uri = uri.port(8080)
-    }
-
     const { login, password } = options
-    const _api = R.partial(callApi, [login, password, uri])
-    const _crumb = () => _api(Maybe.Nothing(), 'crumbIssuer', { background: true }).then(Maybe)
-    return _api(Maybe.Nothing(), '', { query: { tree: 'primaryView[name,url],views[name,url],useCrumbs' } })
-        .then((response) => Promise.all([R.equals(response.useCrumbs, true) ? _crumb() : Maybe.Nothing(), response]))
-        .then(([issuer, response]) => ({ req: R.partial(_api, [issuer]), credentials: R.always(options), info: response }))
+    const api = R.partial(callApi, [login, password, createUrl(options.server)])
+    const crumb = () => api(Maybe.Nothing(), 'crumbIssuer', { background: true }).then(Maybe)
+    return api(Maybe.Nothing(), '', { query: { tree: 'primaryView[name,url],views[name,url],useCrumbs' } })
+        .then((response) => Promise.all([R.equals(response.useCrumbs, true) ? crumb() : Maybe.Nothing(), response]))
+        .then(([issuer, response]) => ({ req: R.partial(api, [issuer]), credentials: R.always(options), info: response }))
         .then(R.tap(mask.hide))
 }
 

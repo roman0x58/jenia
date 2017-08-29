@@ -14,6 +14,7 @@ export const withProps = (props, fn) => R.compose(
     R.apply(fn),
     R.unapply(R.converge(R.concat, [R.compose(R.props(props), R.head), R.tail]))
 )
+export const compact = R.reject(R.isNil)
 
 const factory = logLevel.methodFactory
 logLevel.setDefaultLevel(logLevel.levels.TRACE)
