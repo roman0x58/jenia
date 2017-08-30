@@ -15,10 +15,9 @@ const JenkinsException = function (message, request) {
 }
 
 let callApi = function (login, password, baseUrl, issuer, path, options, segment = 'api/json') {
-
     // es6 default arg caused unpredicted behavior
     options = options || {}
-    const url = new URL(`${path}/${segment}`, baseUrl)
+    const url = new URL(!R.isEmpty(segment) ? `${path}/${segment}` : path, baseUrl)
     if (options.query) {
         R.forEachObjIndexed((v, k) => {
             if (!R.isNil(v)) url.searchParams.append(k, v)
