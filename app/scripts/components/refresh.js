@@ -12,7 +12,9 @@ import $filter from 'flyd/module/filter'
 import afterSilence from 'flyd/module/aftersilence'
 import app from '../app'
 
-const call = (...fns) => R.apply(R.pipeP, R.prepend(() => Promise.resolve(m.redraw()), R.map((fn) => () => dispatcher.dispatch(fn), fns)))()
+const call = (...fns) => new Promise((resolve, reject) => requestAnimationFrame(() =>
+        R.apply(R.pipeP, R.prepend(() => Promise.resolve(m.redraw()), R.map((fn) => () => dispatcher.dispatch(fn), fns)))().then(resolve).catch(reject)
+    ))
 const results = {
     FAILURE: 'failed',
     SUCCESS: 'successful',
@@ -26,15 +28,15 @@ const lenEq = R.useWith(R.equals, [R.length, R.length])
 
 const log = logFactory.getLogger('refresh-task')
 export const refreshImmediate = () => call('updateQueue', 'checkBuilding')
-export const refresh = (model, route) => {
+export const refresh = (model, route, interval) => {
     const eq = p => R.equals(route().name, p)
 
     const scanned = flyd.scan(R.compose(R.takeLast(2), R.flip(R.append)), [], dropRepeatsWith(R.equals, model.building))
     const finished = $filter(R.complement(R.isEmpty), scanned.map(R.ifElse(R.compose(R.equals(2), R.length), R.apply(R.difference), R.always([]))))
 
     const localRoute = afterSilence(2000, $filter(R.flip(checkPaths)(['jobs', 'job']), route))
-    const localQueue = $filter(R.complement(R.isEmpty), afterSilence(1000, model.queue).map(R.flatten))
-    const localBuilding = $filter(R.complement(R.isEmpty), afterSilence(3000, model.building).map(R.flatten))
+    const localQueue = $filter(R.complement(R.isEmpty), afterSilence(interval, model.queue).map(R.flatten))
+    const localBuilding = $filter(R.complement(R.isEmpty), afterSilence(interval, model.building).map(R.flatten))
 
     finished.map((builds) => {
         const namecheck = check(builds, peq('name'))

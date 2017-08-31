@@ -7,6 +7,9 @@ export default {
     view({ attrs }) {
         let cls = attrs.formCls,
             inputs = attrs.fields
-        return m(`form.${cls}.jn-form`, inputs.map(field => m(Input, R.merge(field, { cls }))))
+        return m(`form.${cls}.jn-form`, { onsubmit: (e) =>{
+            e.preventDefault()
+            if(attrs.onsubmit) attrs.onsubmit(e)
+        } }, inputs.map(field => m(Input, R.merge(field, { cls }))))
     }
 }

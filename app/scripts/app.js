@@ -117,7 +117,7 @@ const Layout = {
         ]
     }
 }
-
+const setting = (prop) => R.prop(prop, AppModel.settings())
 const ifSetting = (prop, value, trueFn, falseFn = R.identity) => R.ifElse(R.always(R.propEq(prop, value)(AppModel.settings())), trueFn, falseFn)
 if (R.either(platform.linux, platform.win32)()) {
     // This will add a focus border to the window
@@ -160,7 +160,7 @@ const App = {
                 App.model = resurrect(model, 'app')
 
                 App.streams = []
-                App.streams.push(refresh(App.model, AppModel.route))
+                App.streams.push(refresh(App.model, AppModel.route, setting('refreshinterval') * 1000))
                 App.streams.push(flyd.on(() => burial(model, 'app'), burialTick(model)))
                 App.streams.push(flyd.on(ipc('bookmarks'), model.bookmarks))
 

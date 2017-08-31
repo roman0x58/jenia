@@ -59,13 +59,12 @@
             margin-top 5px
             width 70%
             color: #ccc
-        &-error
-            color white
-            background: $cl.red
-            padding 7px
+        &-label-error
+            @extend .jn-form__input-label-description
+            color: lighten($cl.red, 10%)
         &--invalid > input
-            border-color: $cl.red !important
-            color: $cl.red !important
+            border-color: lighten($cl.red, 10%) !important
+            color: lighten($cl.red, 10%) !important
         margin-top 10px
         input[type=text]
         input[type=password]

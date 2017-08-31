@@ -14,6 +14,9 @@ export default {
             m(Form, {
                 formCls: 'jn-app__settings',
                 fields: [
+                    { type: 'text', name: 'refreshinterval', label: 'Refresh interval', inputWidth: '100px',
+                        validator : [/^([1-9]\d*)$/, 'Value should be a valid number'],
+                        desc: 'Interval in seconds after which app will be refreshed. It makes xhr request each time. Default interval is 5 seconds.', value: (v) => state('refreshinterval', v)},
                     env.whenDarwin({ type: 'checkbox', name: 'keepindock', label: 'Keep in dock',
                         desc: 'Kepp the application icon in OS X dock.', value: (v) => state('keepindock', v) }),
                     { type: 'checkbox', name: 'quitonclose', label: 'Quit app on close',

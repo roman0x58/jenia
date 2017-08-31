@@ -9,6 +9,7 @@ const AppModel = collectionMixin({
     servers: flyd.stream([]),
     route: flyd.stream(),
     settings: flyd.stream({
+        refreshinterval: 5,
         keepindock: false,
         saveserverpass: false,
         quitonclose: false
