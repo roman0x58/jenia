@@ -2,7 +2,7 @@
 import m from 'mithril'
 import dispatcher from '../dispatcher'
 import u from '../components/util'
-import { bookmark } from '../views/joblist'
+import bookmark from '../views/bookmark'
 
 export default {
     view({ attrs }) {

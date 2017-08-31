@@ -29,7 +29,7 @@ const assocLogText = R.curry((build, logText) => build.map(R.assoc('console', lo
 const cancelLog = (build) => build().chain(v => Maybe(R.prop('console', v))).map(v => v.end(true))
 const letters = R.compose(R.toUpper, R.transduce(R.map(R.take(1)), R.concat, ''), R.split(/\s|\./))
 const pallete = ['1F4E5F', 'e74c3c', 'F5AB35', '571EC3', '52616B', '1F4E5F']
-const colors = R.memoize(() => '#' + pallete[Math.floor(Math.random()*pallete.length)])
+const colors = R.memoize(() => '#' + pallete[Math.floor(Math.random() * pallete.length)])
 
 export const Console = {
     view({ attrs }) {
@@ -60,7 +60,7 @@ const Changes = {
                             body: util.toM(() => {
                                 return m('ul.jn-job-affected-paths', R.sortBy(R.prop('editType'), i.paths).map(e => {
                                     const svg = flyd.stream()
-                                    switch(e.editType){
+                                    switch (e.editType) {
                                         case 'add': svg('diff-added')
                                             break
                                         case 'delete': svg('diff-removed')
@@ -76,7 +76,7 @@ const Changes = {
                     }, [
                         util.svg('git-commit'),
                         R.take(7, i.commitId),
-                        m('span.jn-job__commit-author', { style: { color: colors(letters(i.author.fullName)) } } ,letters(i.author.fullName))
+                        m('span.jn-job__commit-author', { style: { color: colors(letters(i.author.fullName)) } }, letters(i.author.fullName))
                     ]), moment(i.timestamp).format('DD MMM kk:mm') + '<br/>' + i.author.fullName),
                     m('span.jn-job__commit-msg', i.msg),
                     m('span.jn-job__commit-author', ),

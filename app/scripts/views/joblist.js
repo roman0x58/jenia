@@ -3,17 +3,17 @@
 import m from 'mithril'
 import R from 'ramda'
 import u from '../components/util'
-import Params from './params'
 import { Tip } from '../components/tooltip'
 import modal from '../components/modal'
 import notifications from '../components/notifications'
 import moment from 'moment'
 import { Console } from './job'
+import Params from './params'
+import bookmark from './bookmark'
 import dispatcher from '../dispatcher'
 import { Maybe } from 'ramda-fantasy'
-import flyd from 'flyd'
 
-const extractJobParams = R.compose(R.reject(R.isNil), R.flatten, R.pluck('parameterDefinitions'), R.reject(R.isNil), u.toArray, R.path(['actions']))
+export const extractJobParams = R.compose(R.reject(R.isNil), R.flatten, R.pluck('parameterDefinitions'), R.reject(R.isNil), u.toArray, R.path(['actions']))
 
 const hasAnime = R.contains('anime')
 
@@ -81,41 +81,7 @@ export const Actions = {
     }
 }
 
-const isPhantom = R.compose(R.isNil, R.prop('id'))
-const assocId = R.when(isPhantom, (o) => R.assoc('id', u.id(), o))
-export const bookmark = (bookmark) => {
-    const paramsDefenition = extractJobParams(bookmark.job),
-        paramsValues = R.clone(R.propOr({}, 'paramses', bookmark.job)),
-        values = { name: flyd.stream(bookmark.name) },
-        read = R.map(R.when(flyd.isStream, R.call))
-    modal.show({
-        title: isPhantom(bookmark) ? 'Add bookmark' : 'Edit bookmark',
-        class: 'jn-bookmark-modal',
-        body: u.toM(() => m('.jn-bookmark.jn-form', {
-            class: u.classy({ 'jn-bookmark--parametrized': !R.isEmpty(paramsDefenition) })
-        },
-            m('.jn-bookmark__form',
-                m('.jn-form__input', [
-                    m('label', { for: 'bookmark' }, 'Bookmark name'),
-                    m('input', { name: 'bookmarkName', id: 'bookmarkName', type: 'text', oninput: m.withAttr('value', values.name), value: values.name(), required: true })
-                ])
-            ),
-            !R.isEmpty(paramsDefenition) ? m('.jn-bookmark__params', m(Params, { params: paramsDefenition, state: paramsValues })) : null,
-            m('button.jn-bookmark__submit.jn-button', {
-                onclick: () => {
-                    let job = R.assoc('paramses', read(paramsValues), bookmark.job)
-                    bookmark = R.assoc('name', values.name(), bookmark)
-                    bookmark = R.assoc('job', job, bookmark)
 
-                    return Promise.resolve(dispatcher.dispatch('addOrUpdate', 'bookmarks', assocId(bookmark), (v) => R.propEq('id', v.id)))
-                        .then(() => notifications.info('Bookmark has been added to tray menu'))
-                        .then(modal.hide)
-                        .then(m.redraw)
-                }
-            }, 'Save')
-        ))
-    })
-}
 const cancelBuild = (job) => {
     return dispatcher
         .dispatch('stopBuild', job, job.lastBuild.number)

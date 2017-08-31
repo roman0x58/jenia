@@ -10,18 +10,20 @@ const state = {
     config: flyd.stream({})
 }
 
+state.opened.map(m.redraw)
+
 const config = util.config(state.config)
 const createM = R.ifElse(util.isM, m, R.identity)
 const keys = { ENTER: 27 }
 const onKey = (key, fn) => (e) => equals(e.keyCode, key) ? fn(e, key) : e.redraw = false
 const Modal = {
     show(config) {
-        state.opened(true)
         state.config(config)
+        state.opened(true)
     },
     hide() {
-        state.opened(false)
         Maybe(config('onclose')).map(R.call)
+        state.opened(false)
     },
     view() {
         return state.opened() ? m('.jn-modal.jn-modal--show.jn-modal--scale-in', {
