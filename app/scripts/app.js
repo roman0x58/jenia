@@ -1,32 +1,32 @@
 'use strict'
 
-import m from "mithril";
-import R from "ramda";
-import { Maybe } from "ramda-fantasy";
-import flyd from "flyd";
+import m from 'mithril'
+import R from 'ramda'
+import { Maybe } from 'ramda-fantasy'
+import flyd from 'flyd'
 
-import AppModel, { defaultServer, serverPredicate } from "./models/app";
-import { createModel } from "./models/jenkins";
-import u, { checkPaths, logFactory, platform, withoutRedraw } from "./components/util";
+import AppModel, { defaultServer, serverPredicate } from './models/app'
+import { createModel } from './models/jenkins'
+import u, { checkPaths, logFactory, platform, withoutRedraw } from './components/util'
 // Components
-import notifications from "./components/notifications";
-import modal from "./components/modal";
-import tooltip, { Tip } from "./components/tooltip";
-import mask from "./components/mask";
-import { burial, epitaph, resurrection } from "./components/cemetery";
-import { refresh, refreshImmediate } from "./components/refresh";
-import dispatcher from "./dispatcher";
-import { ipc } from "./services/ipc";
-import { checkForUpdates, installUpdate, updateAvailable } from "./services/updates";
+import notifications from './components/notifications'
+import modal from './components/modal'
+import tooltip, { Tip } from './components/tooltip'
+import mask from './components/mask'
+import { burial, resurrection } from './components/cemetery'
+import { refresh, refreshImmediate } from './components/refresh'
+import dispatcher from './dispatcher'
+import { ipc } from './services/ipc'
+import { checkForUpdates, installUpdate, updateAvailable } from './services/updates'
 // Views
-import { Login } from "./views/login";
-import { Job } from "./views/job";
-import { JobList } from "./views/joblist";
-import { JobViews } from "./views/jobviews";
-import { Queue } from "./views/queue";
-import { Settings } from "./views/settings";
-import afterSilence from "flyd/module/aftersilence";
-import mergeAll from "flyd/module/mergeall";
+import { Login } from './views/login'
+import { Job } from './views/job'
+import { JobList } from './views/joblist'
+import { JobViews } from './views/jobviews'
+import { Queue } from './views/queue'
+import { Settings } from './views/settings'
+import afterSilence from 'flyd/module/aftersilence'
+import mergeAll from 'flyd/module/mergeall'
 
 export const shared = window.shared
 const log = logFactory.getLogger('app')
@@ -158,7 +158,7 @@ const App = {
         return model.init(credentials)
             .then(R.tap(() => {
                 App.model = resurrection(model, 'app')
-                
+
                 App.streams = []
                 App.streams.push(refresh(App.model, AppModel.route))
                 App.streams.push(flyd.on(() => burial(model, 'app'), burialTick(model)))
