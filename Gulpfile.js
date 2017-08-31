@@ -93,8 +93,8 @@ gulp.task('svg', () => {
 
 gulp.task('lint', () => {
     return gulp.src([
-        paths.app('*/**.js'),
-        paths.electron('*/**.js'),
+        paths.app('**/**.js'),
+        paths.electron('**/**.js'),
         '!' + paths.build('**')
     ])
         .pipe($.eslint())

@@ -4,7 +4,6 @@ const { app, Tray, BrowserWindow, Menu, ipcMain, nativeImage } = require('electr
 const { checkUpdates, installUpdate } = require('./lib/updater')
 const paths = require('./lib/paths')
 const pkg = require('./package.json')
-const moment = require('moment')
 const R = require('ramda')
 const trayTemplate = require('./menus/traymenu')
 const appMenuTemplate = require('./menus/appmenu')
