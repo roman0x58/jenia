@@ -15,7 +15,7 @@ const assocId = R.when(isPhantom, (o) => R.assoc('id', u.id(), o))
 const read = R.map(R.when(flyd.isStream, R.call))
 
 export default (bookmark) => {
-    const defenitions = extractJobParams(bookmark.job)
+    const definitions = extractJobParams(bookmark.job)
     const values = R.clone(R.propOr({}, 'paramses', bookmark.job))
     const model = { name: flyd.stream(bookmark.name) }
 
@@ -23,7 +23,7 @@ export default (bookmark) => {
         title: isPhantom(bookmark) ? 'Add bookmark' : 'Edit bookmark',
         class: 'jn-bookmark-modal',
         body: u.toM(() => m('.jn-bookmark.jn-form', {
-            class: u.classy({ 'jn-bookmark--parametrized': !R.isEmpty(defenitions) })
+            class: u.classy({ 'jn-bookmark--parametrized': !R.isEmpty(definitions) })
         },
             m('.jn-bookmark__form',
                 m('.jn-form__input', [
@@ -31,7 +31,7 @@ export default (bookmark) => {
                     m('input', { name: 'bookmarkName', id: 'bookmarkName', type: 'text', oninput: m.withAttr('value', model.name), value: model.name(), required: true })
                 ])
             ),
-            !R.isEmpty(defenitions) ? m('.jn-bookmark__params', m(Params, { params: defenitions, state: values })) : null,
+            !R.isEmpty(definitions) ? m('.jn-bookmark__params', m(Params, { params: definitions, state: values })) : null,
             m('button.jn-bookmark__submit.jn-button', {
                 onclick: () => {
                     let job = R.assoc('paramses', read(values), bookmark.job)

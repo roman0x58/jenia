@@ -28,8 +28,8 @@ const cook = R.lift(R.compose(R.omit(['actions', 'changeSet']), assocParamses, a
 const assocLogText = R.curry((build, logText) => build.map(R.assoc('console', logText)))
 const cancelLog = (build) => build().chain(v => Maybe(R.prop('console', v))).map(v => v.end(true))
 const letters = R.compose(R.toUpper, R.transduce(R.map(R.take(1)), R.concat, ''), R.split(/\s|\./))
-const pallete = ['1F4E5F', 'e74c3c', 'F5AB35', '571EC3', '52616B', '1F4E5F']
-const colors = R.memoize(() => '#' + pallete[Math.floor(Math.random() * pallete.length)])
+const palette = ['1F4E5F', 'e74c3c', 'F5AB35', '571EC3', '52616B', '1F4E5F']
+const colors = R.memoize(() => '#' + palette[Math.floor(Math.random() * palette.length)])
 
 export const Console = {
     view({ attrs }) {

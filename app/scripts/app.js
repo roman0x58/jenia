@@ -1,37 +1,32 @@
 'use strict'
 
-import m from 'mithril'
-import R from 'ramda'
-import { Maybe } from 'ramda-fantasy'
-import flyd from 'flyd'
+import m from "mithril";
+import R from "ramda";
+import { Maybe } from "ramda-fantasy";
+import flyd from "flyd";
 
-import AppModel from './models/app'
-import { createModel } from './models/jenkins'
-import { logFactory } from './components/util'
-
+import AppModel, { defaultServer, serverPredicate } from "./models/app";
+import { createModel } from "./models/jenkins";
+import u, { checkPaths, logFactory, platform, withoutRedraw } from "./components/util";
 // Components
-import notifications from './components/notifications'
-import modal from './components/modal'
-import tooltip from './components/tooltip'
-import mask from './components/mask'
-import { Tip } from './components/tooltip'
-import u from './components/util'
-import { refresh, refreshImmediate } from './components/refresh'
-import { checkPaths, platform, withoutRedraw } from './components/util'
-import { defaultServer, findServer, serverPredicate } from './models/app'
-import dispatcher from './dispatcher'
-import { ipc } from './services/ipc'
-import { updateAvailable, checkForUpdates, installUpdate } from './services/updates'
-
+import notifications from "./components/notifications";
+import modal from "./components/modal";
+import tooltip, { Tip } from "./components/tooltip";
+import mask from "./components/mask";
+import { burial, epitaph, resurrection } from "./components/cemetery";
+import { refresh, refreshImmediate } from "./components/refresh";
+import dispatcher from "./dispatcher";
+import { ipc } from "./services/ipc";
+import { checkForUpdates, installUpdate, updateAvailable } from "./services/updates";
 // Views
-import { Login } from './views/login'
-import { Job } from './views/job'
-import { JobList } from './views/joblist'
-import { JobViews } from './views/jobviews'
-import { Queue } from './views/queue'
-import { Settings } from './views/settings'
-import afterSilence from 'flyd/module/aftersilence'
-import mergeAll from 'flyd/module/mergeall'
+import { Login } from "./views/login";
+import { Job } from "./views/job";
+import { JobList } from "./views/joblist";
+import { JobViews } from "./views/jobviews";
+import { Queue } from "./views/queue";
+import { Settings } from "./views/settings";
+import afterSilence from "flyd/module/aftersilence";
+import mergeAll from "flyd/module/mergeall";
 
 export const shared = window.shared
 const log = logFactory.getLogger('app')
@@ -139,19 +134,6 @@ ipcRenderer.on('build', (e, v) => App.model.runBuild(v.job, v.job.paramses)
 )
 ipcRenderer.on('route', (e, v) => App.routeTo(v.path, v.attrs))
 
-// statekey :: object -> string
-const stateKey = (credentials) => 'appmodel-' + credentials.server + credentials.login
-const storeAppModel = (model) =>
-    requestAnimationFrame(() => {
-        if (model.jenkins()) {
-            const credentials = findServer(model.jenkins().credentials())
-            if (credentials) {
-                log.debug('[state] save for credentials ', credentials)
-                localStorage.setItem(stateKey(credentials), JSON.stringify(R.equals(credentials.default, R.T()) ? R.omit(['jenkins'], model) : R.pick(['bookmarks'], model)))
-            }
-        }
-    })
-
 const viewIndex = (view) => R.findIndex(R.propEq('name', R.prop('name', view)))(App.model.views())
 const kill = R.forEach(R.invoker(1, 'end')(true))
 const undefault = (server) => dispatcher.dispatch('settings.default', server, false)
@@ -172,16 +154,14 @@ const App = {
     },
 
     signIn(credentials) {
-        let state = () => localStorage.getItem(stateKey(credentials))
         let model = createModel()
         return model.init(credentials)
-            .then((response) => [restore(model, state()), response])
-            .then(R.tap(([model]) => {
-                App.model = model
+            .then(R.tap(() => {
+                App.model = resurrection(model, 'app')
+                
                 App.streams = []
-
                 App.streams.push(refresh(App.model, AppModel.route))
-                App.streams.push(flyd.on(() => storeAppModel(model), stateTick(model)))
+                App.streams.push(flyd.on(() => burial(model, 'app'), burialTick(model)))
                 App.streams.push(flyd.on(ipc('bookmarks'), model.bookmarks))
 
                 dispatcher.dispatch('settings.addOrUpdate', 'servers', ifSetting('saveserverpass', false, R.omit(['password']))(credentials), serverPredicate)
@@ -199,8 +179,8 @@ const App = {
 
     onLogin(credentials) {
         return App.signIn(credentials)
-            .then(R.compose(App.changeView, R.prop('primaryView'), R.last))
-            .then(() => notifications.success('successfuly connected to jenkins'))
+            .then(R.compose(App.changeView, R.prop('primaryView')))
+            .then(() => notifications.success('successfully connected to jenkins'))
     },
     refresh() {
         if (App.model) refreshImmediate(App.model)
@@ -229,29 +209,12 @@ const App = {
     }
 }
 
-// stateTick :: object -> stream
-const stateTick = R.compose(afterSilence(50), mergeAll, streamsOf)
-
-// restore :: object -> object -> object
-const restore = R.curry((model, state) => {
-    log.debug('[state] restore', state)
-    R.forEachObjIndexed((v, k) => {
-        const mValue = model[k]
-        if (flyd.isStream(mValue)) {
-            mValue(v)
-        }
-        else if (R.is(Object, mValue) && !R.isEmpty(mValue)) {
-            restore(v, mValue)
-        }
-    }, JSON.parse(state))
-    return model
-})
+const burialTick = R.compose(afterSilence(50), mergeAll, streamsOf)
 
 const initApp = () => {
-    const model = restore(AppModel, localStorage.getItem('app'))
     ipc('bookmarks', [])
-
-    flyd.on(() => localStorage.setItem('app', JSON.stringify(R.assoc('history', model.history(), model))), stateTick(model))
+    const model = resurrection(AppModel, 'global')
+    flyd.on(() => burial(model, 'global'), burialTick(model))
     flyd.on(ipc('settings'), model.settings)
     flyd.on(m.redraw, model.route)
 
