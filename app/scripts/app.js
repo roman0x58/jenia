@@ -13,7 +13,7 @@ import notifications from './components/notifications'
 import modal from './components/modal'
 import tooltip, { Tip } from './components/tooltip'
 import mask from './components/mask'
-import { burial, resurrection } from './components/cemetery'
+import { burial, resurrect } from './components/cemetery'
 import { refresh, refreshImmediate } from './components/refresh'
 import dispatcher from './dispatcher'
 import { ipc } from './services/ipc'
@@ -157,7 +157,7 @@ const App = {
         let model = createModel()
         return model.init(credentials)
             .then(R.tap(() => {
-                App.model = resurrection(model, 'app')
+                App.model = resurrect(model, 'app')
 
                 App.streams = []
                 App.streams.push(refresh(App.model, AppModel.route))
@@ -213,7 +213,7 @@ const burialTick = R.compose(afterSilence(50), mergeAll, streamsOf)
 
 const initApp = () => {
     ipc('bookmarks', [])
-    const model = resurrection(AppModel, 'global')
+    const model = resurrect(AppModel, 'global')
     flyd.on(() => burial(model, 'global'), burialTick(model))
     flyd.on(ipc('settings'), model.settings)
     flyd.on(m.redraw, model.route)

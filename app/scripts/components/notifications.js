@@ -59,7 +59,10 @@ const notifications = R.merge(convert((i) => (message, attrs) => state.add(messa
     },
     view() {
         return m('div.jn-notifications', state.items().map((i) => m(notification, {
-            message: i.message, type: i.type, onclick: () => state.del(i), key: i.id, onnotifyclick: i.attrs.onclick
+            message: i.message, type: i.type, onclick: (e) => {
+                e.stopPropagation()
+                state.del(i)
+            }, key: i.id, onnotifyclick: i.attrs.onclick
         }), state.items()))
     }
 })

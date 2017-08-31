@@ -1,7 +1,7 @@
 'use strict'
 
-import R from "ramda";
-import flyd from "flyd";
+import R from 'ramda'
+import flyd from 'flyd'
 
 export const cemetery = {
     bury(key, o){
@@ -12,8 +12,7 @@ export const cemetery = {
     }
 }
 
-export const epitaph = (credentials) => 'appmodel-' + credentials.server + credentials.login
-
+export const epitaph = (credentials) => credentials.server + credentials.login
 export const burial = (model, type) => requestAnimationFrame(() => {
     if (type === 'global') {
         const tomb = R.assoc('history', model.history(), model)
@@ -23,12 +22,12 @@ export const burial = (model, type) => requestAnimationFrame(() => {
         if (model.jenkins()) {
             const credentials = model.jenkins().credentials()
             const tomb = credentials.default ? R.omit(['jenkins'], model) : R.pick(['bookmarks'], model)
-            cemetery.bury(epitaph(credentials), tomb)
+            cemetery.bury(type + epitaph(credentials), tomb)
         }
     }
 })
-export const resurrection = (model, type) => {
-    const e = type === 'app' ? epitaph(model.jenkins().credentials()) : type
+export const resurrect = (model, type) => {
+    const e = type === 'app' ? type + epitaph(model.jenkins().credentials()) : type
     R.forEachObjIndexed((v, k) => flyd.isStream(model[k]) ? model[k](v) : model[k] = v, cemetery.dig(e))
     return model
 }
