@@ -1,5 +1,7 @@
 [![travis][travis-image]][travis-url]
 
+[![GitHub license](https://img.shields.io/github/license/roman0x58/jenia.svg?style=flat-square)](https://github.com/roman0x58/jenia.svg)
+[![GitHub release](https://img.shields.io/github/release/roman0x58/jenia.svg?style=flat-square)](https://github.com/roman0x58/jenia.svg)
 [travis-image]: https://img.shields.io/travis/roman0x58/jenia.svg?style=flat-square
 [travis-url]: https://travis-ci.org/roman0x58/jenia
 
