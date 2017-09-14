@@ -1,9 +1,7 @@
-[![travis][travis-image]][travis-url]
+[![GitHub license](https://img.shields.io/github/license/roman0x58/jenia.svg?style=flat-square)](https://github.com/roman0x58/jenia)
+[![GitHub release](https://img.shields.io/github/release/roman0x58/jenia.svg?style=flat-square)](https://github.com/roman0x58/jenia)
+[![Travis build](https://img.shields.io/travis/roman0x58/jenia.svg?style=flat-square)](https://travis-ci.org/roman0x58/jenia)
 
-[![GitHub license](https://img.shields.io/github/license/roman0x58/jenia.svg?style=flat-square)](https://github.com/roman0x58/jenia.svg)
-[![GitHub release](https://img.shields.io/github/release/roman0x58/jenia.svg?style=flat-square)](https://github.com/roman0x58/jenia.svg)
-[travis-image]: https://img.shields.io/travis/roman0x58/jenia.svg?style=flat-square
-[travis-url]: https://travis-ci.org/roman0x58/jenia
 
 ## - about
 **Jenia** is an open-source cross-platform application that provides a usable GUI interface for Jenkins CI. It should make you happy to build your code every day. This application have been created as a hobby project and the first purpose of it is to build your Jenkins CI jobs quickly and less painfully, becuase IMHO the Jenkins UI is a bit ugly and unsable. Jenia built on [Electron](https://electron.atom.io/) and uses [Mithril](https://mithril.js.org).
