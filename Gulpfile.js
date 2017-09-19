@@ -64,6 +64,7 @@ gulp.task('styles', (done) => {
 gulp.task('watch', () => {
     $.livereload.listen()
     return Q.all([
+        gulp.watch(paths.app('svg/*.svg'), gulp.series('svg')),
         gulp.watch(paths.styles('**/*.styl'), gulp.series('styles')),
         watchify(bundler).on('update', () =>
             makeBundle(bundler, { sourceMap: true }).pipe(gulp.dest(paths.build())).pipe($.livereload()))

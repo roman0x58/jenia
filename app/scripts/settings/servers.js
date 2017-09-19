@@ -3,6 +3,7 @@ import R from 'ramda'
 import m from 'mithril'
 import dispatcher from '../dispatcher'
 import u from '../components/util'
+import { Tip } from '../components/tooltip'
 
 export default {
     view({ attrs }) {
@@ -21,7 +22,9 @@ export default {
                         m('td.jn-table__td', R.equals(true, i.default) ? m('.jn-servers__default-label', 'auto login') : null),
                         m('td.jn-table__td', m('.jn-table__actions',
                             m('ul.jn-actions',
-                                m('li.jn-actions__action', { onclick: () => dispatcher.dispatch('settings.del', 'servers', i) }, u.svg('x'))
+                                Tip.with(
+                                    m('li.jn-actions__action', { onclick: () => dispatcher.dispatch('settings.del', 'servers', i) }, u.svg('x'))
+                                , 'Remove')
                             )
                         ))
                     ])
