@@ -1,3 +1,9 @@
+@keyframes console
+    0%
+        fill: $cl.gray
+    100%
+        fill: $cl.orange
+
 .jn-job
     lost-flex-container row
     height 100%
@@ -7,7 +13,7 @@
     &--console-active
         // TODO add classes for actions
         .jn-job__action-console
-            fill orange
+            animation console 1s infinite alternate ease-in-out
     &__info
         flex 0 0 auto
         display flex
@@ -70,7 +76,7 @@
             font-weight bold
             color: $cl.blue
     &__action
-        @extend .jn-actions__action
+        @extend .jn-actions__action            
     &__actions
         @extend .jn-actions
         &--hidden 

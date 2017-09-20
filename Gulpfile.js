@@ -26,10 +26,10 @@ env.set($.util.env.env || 'development')
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'))
 const logger = (logFn, color) => (head, ...tail) => logFn.apply(logFn, [$.util.colors[color](head)].concat(tail))
 
-let log   = logger($.util.log, 'blue')
+let log = logger($.util.log, 'blue')
 log.error = logger($.util.log, 'red')
-log.pkg   = logger($.util.log, 'magenta')
-log.sys   = logger(console.log, 'yellow')
+log.pkg = logger($.util.log, 'magenta')
+log.sys = logger(console.log, 'yellow')
 
 log.sys(fs.readFileSync('./greeting', 'utf8'))
 log.sys(`
@@ -116,7 +116,7 @@ gulp.task('build', gulp.series('lint', 'clean', gulp.parallel('template', 'style
     gulp.src(paths.app('bootstrap.js'))
         .pipe(gulp.dest(paths.build()))
 
-    return makeBundle(bundler, { sourceMap: env.dev(), uglify: env.prod()})
+    return makeBundle(bundler, { sourceMap: env.dev(), uglify: env.prod() })
         .pipe(gulp.dest(paths.build()))
 }))
 
@@ -159,7 +159,7 @@ let makeBundle = function (bundle, { sourceMap = false, uglify = false, fileName
 
     if (uglify === true) {
         log('[Bundle] -> Uglifiyng bundle')
-        stream.pipe($.uglify({ compress: { drop_console: true }}))
+        stream.pipe($.uglify({ compress: { drop_console: true } }))
     }
 
     if (sourceMap === true) {

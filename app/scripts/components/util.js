@@ -146,6 +146,6 @@ export default {
 
     }),
     svg: (name, cls = '', handler) => {
-        return m('svg', { class: R.trim('jn-icon ' + cls), onclick: handler }, m('use', { 'xlink:href': `images/sprite.svg#${name}` }))
+        return m('svg', { class: R.trim('jn-icon ' + cls), onclick: handler }, m('use', { 'href': `images/sprite.svg#${name}` }))
     }
 }
