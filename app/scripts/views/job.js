@@ -57,7 +57,6 @@ const Changes = {
     view({ attrs: { selected } }) {
         const num = selected.map(R.prop('number'))
         return m('div.jn-job__change-set', selected.chain(R.prop('changes')).map((c) => [
-            // m('h4.jn-job__change-set-title', 'Last 5 commit messages'),
             m('ul.jn-job__change-set-list', c.map((i) =>
                 m('li.jn-job__commit', [
                     Tip.with(m('span.jn-job__commit-id.jn-label', {
