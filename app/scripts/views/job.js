@@ -30,10 +30,17 @@ const cancelLog = (build) => build().chain(v => Maybe(R.prop('console', v))).map
 const letters = R.compose(R.toUpper, R.transduce(R.map(R.take(1)), R.concat, ''), R.split(/\s|\./))
 const palette = ['1F4E5F', 'e74c3c', 'F5AB35', '571EC3', '52616B', '1F4E5F']
 const colors = R.memoize(() => '#' + palette[Math.floor(Math.random() * palette.length)])
+const wrapToNode = R.useWith(R.flip(R.append), [R.identity, i => m('div', i)])
 
+// TODO implement occlusion culling for the big console outputs
 export const Console = {
-    view({ attrs }) {
-        return m('.jn-job__console', R.omit('logText')(attrs), m('pre.jn-console-output', m('code', attrs.logText())))
+    oninit({ state, attrs }){
+        // Wrap each line to mithril div node, when the log stream gets values,
+        // to avoid the big text node rerendering
+        state.log = attrs.isActive ? flyd.scan(wrapToNode, [], attrs.logText) : attrs.logText
+    },
+    view({ state, attrs }) {
+        return m('.jn-job__console', R.omit('logText')(attrs), m('pre.jn-console-output', m('code', state.log())))
     }
 }
 
@@ -145,7 +152,7 @@ export const Job = {
                         }, i))),
                 m('div.jn-job__tab-content', m(R.prop(state.tab, R.fromPairs(tabs)), { selected })),
                 Maybe.maybe(null, logText =>
-                    m(Console, { class: util.classy({ 'jn-job__console--hidden': !(state.console()) }), logText })
+                    m(Console, { class: util.classy({ 'jn-job__console--hidden': !(state.console()) }), isActive: logIsActive, logText })
                 )(logText)
             ),
             m('ul.jn-job__builds',

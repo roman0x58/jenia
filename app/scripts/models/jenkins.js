@@ -126,11 +126,8 @@ export const createModel = () => collectionMixin({
                     return consumer
                 })
                 .then(R.tap(m.redraw))
-
-        return puller(stream)
-            .then((stream) => !R.equals(stream.end(), true) ? flyd.scan(R.concat, '', stream) : stream)
-            // stop console pulling on the stream end
-            .then(R.tap(R.compose(flyd.on(stop), R.prop('end'))))
+        // stop console pulling on the stream end
+        return puller(stream).then(R.tap(R.compose(flyd.on(stop), R.prop('end'))))
     },
 
     // -------------- Initialization
