@@ -1,4 +1,14 @@
 # Jenia Change log
+## [0.3.0] - 2017-09-22
+### Added
+    - Refresh interval application setting
+    - Console 'Pin to bottom' tool
+    - OS X font legibility styles
+    - Simplify application routing
+    - Upgrade electron version to 1.7.7
+    - Some small fixes & improvements
+### Removed
+    - Unnecessary dependencies such as uri.js, localforage etc.
 ## [0.2.0] - 2017-08-09
 ### Added
     - Notifications for succeded/aborted/failed builds (desktop notification will be implemented in the future)

@@ -1,6 +1,6 @@
 'use strict'
 
-const pkg = require('../package.json'),
+const pkg = require('../../package.json'),
     paths = require('./paths'),
     moment = require('moment'),
     R = require('ramda'),
