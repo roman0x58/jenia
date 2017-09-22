@@ -22,7 +22,7 @@
     "browserify": "^14.3.0",
     "browserify-handlebars": "^1.0.0",
     "del": "^2.2.0",
-    "electron": "^1.8.0",
+    "electron": "^1.7.7",
     "electron-installer-debian": "^0.5.1",
     "electron-installer-dmg": "^0.2.1",
     "electron-installer-redhat": "^0.4.0",

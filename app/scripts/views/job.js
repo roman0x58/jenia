@@ -34,13 +34,32 @@ const wrapToNode = R.useWith(R.flip(R.append), [R.identity, i => m('div', i)])
 
 // TODO implement occlusion culling for the big console outputs
 export const Console = {
-    oninit({ state, attrs }){
+    onupdate({ dom, state }) {
+        if (state.pinned === true) {
+            const el = dom.firstChild
+            el.scrollTop = el.scrollHeight
+        }
+    },
+    oninit({ state, attrs }) {
         // Wrap each line to mithril div node, when the log stream gets values,
         // to avoid the big text node rerendering
+        state.pinned = false
         state.log = attrs.isActive ? flyd.scan(wrapToNode, [], attrs.logText) : attrs.logText
     },
     view({ state, attrs }) {
-        return m('.jn-job__console', R.omit('logText')(attrs), m('pre.jn-console-output', m('code', state.log())))
+        return m('.jn-console', R.omit('logText')(attrs),
+            m('.jn-console-wrapper',
+                m('ul.jn-console__tools',
+                    m('li.jn-console__tool.jn-console__tool-pin', {
+                        onclick: () => state.pinned = !state.pinned,
+                        class: util.classy({
+                            'jn-console__tool-pin--active': state.pinned
+                        })
+                    }, util.svg('pin'))
+                ),
+                m('pre.jn-console-output', m('code', state.log()))
+            )
+        )
     }
 }
 
@@ -151,7 +170,12 @@ export const Job = {
                         }, i))),
                 m('div.jn-job__tab-content', m(R.prop(state.tab, R.fromPairs(tabs)), { selected })),
                 Maybe.maybe(null, logText =>
-                    m(Console, { class: util.classy({ 'jn-job__console--hidden': !(state.console()) }), isActive: logIsActive, logText })
+                    m(Console, {
+                        class: util.classy({
+                            'jn-job__console': true,
+                            'jn-console--hidden': !(state.console())
+                        }), isActive: logIsActive, logText
+                    })
                 )(logText)
             ),
             m('ul.jn-job__builds',

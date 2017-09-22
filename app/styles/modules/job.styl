@@ -42,19 +42,6 @@
         padding 20px
         border 1px solid #eee
         overflow-y scroll
-    &__console
-        overflow scroll
-        lost-row 1
-        position relative
-        height 100%
-        background #46525b
-        font-family 'Monaco', 'Consolas', 'Courier', monospace
-        box-sizing border-box
-        color #f7f7f7
-        font-size 11px
-        line-height 16px
-        &--hidden
-            visibility hidden
     &__builds
         animation slideIn .2s forwards ease-out
         overflow-y scroll
@@ -166,5 +153,39 @@ for name, cl in $cl-build
         border-color cl
         .jn-job-build__branch
             background cl
-.jn-console-output
-    padding 20px
+
+.jn-console
+    background #46525b
+    position relative
+    height 100%
+    display flex
+    box-sizing border-box
+    font-family 'Monaco', 'Consolas', 'Courier', monospace
+    color #f7f7f7
+    font-size 11px
+    line-height 16px
+    &-wrapper
+        height 100%
+        width 100%
+        overflow scroll
+    &--hidden
+        visibility hidden 
+    &-output
+        padding 20px
+    &__tools
+        absolute left 0 top 0
+    &__tool
+        .jn-icon
+            vertical-align text-bottom
+            width 13px
+            height 13px
+        background rgba(0,0,0,.5)
+        cursor pointer
+        padding 3px
+        display block
+        &-pin
+            fill white
+            &:hover:not(.jn-console__tool-pin--active)
+                fill darken(white, 10%)
+            &--active
+                fill orange
