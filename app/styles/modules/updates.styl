@@ -1,0 +1,39 @@
+.jn-update-status
+    &--available, &--ready
+        cursor pointer
+    &__svg
+        margin-left 5px
+        margin-top -3px
+        ~/--error &, 
+        ~/--ok &
+            backface-visibility hidden
+            border-radius 50px
+            width 12px
+            height 12px
+            padding 3px
+            fill white
+        ~/--error &
+            background: $cl.red
+            & + ^[0]__msg
+                color: $cl.red
+        ~/--available &
+            fill: $cl.purple
+            & + ^[0]__msg
+                color:  $cl.purple
+        ~/--ok &
+            background: $cl.green
+            & + ^[0]__msg
+                color:  $cl.green
+        ~/--syncing &,
+        ~/--downloading &
+            fill: $cl.blue
+            animation spin 1.3s infinite cubic-bezier(.3,.96,.56,.82)
+            & + ^[0]__msg
+                color:  $cl.blue
+    &__msg
+        font-weight bold
+        font-size 10px
+        vertical-align 1px
+        text-transform uppercase
+        margin-left 5px
+       

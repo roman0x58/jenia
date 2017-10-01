@@ -4,6 +4,7 @@ import flyd from 'flyd'
 import R from 'ramda'
 import { collectionMixin } from '../components/util'
 import { dropRepeatsWith } from 'flyd/module/droprepeats'
+import { env } from '../components/util'
 
 const AppModel = collectionMixin({
     servers: flyd.stream([]),
@@ -12,7 +13,10 @@ const AppModel = collectionMixin({
         refreshinterval: 5,
         keepindock: false,
         saveserverpass: false,
-        quitonclose: false
+        // On linux platforms quitonclose setting
+        // by defeault should be true
+        quitonclose: env.linux(),
+        autoupdate: false
     }),
     default(credentials, state) {
         const def = (state, crds) => AppModel.update('servers', R.assoc('default', state, crds), serverIndex(crds))
@@ -31,8 +35,8 @@ export const serverPredicate = (credentials) => R.whereEq(R.pick(['server', 'log
 export const serverIndex = (credentials) => R.findIndex(serverPredicate(credentials), AppModel.servers())
 export const findServer = (credentials) => R.find(serverPredicate(credentials), AppModel.servers())
 export const defaultServer = R.find(R.propEq('default', true))
+export const setting = (prop) => R.prop(prop, AppModel.settings())
 
 const history = R.compose(flyd.scan(R.compose(R.takeLast(2), R.flip(R.append)), []), dropRepeatsWith(R.equals))
 AppModel.history = history(AppModel.route)
-
 export default AppModel

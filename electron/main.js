@@ -1,7 +1,7 @@
 'use strict'
 
 const { app, Tray, BrowserWindow, Menu, ipcMain, nativeImage } = require('electron')
-const { checkUpdates, installUpdate } = require('./lib/updater')
+const updater = require('./lib/updater')
 const paths = require('./lib/paths')
 const pkg = require('./package.json')
 const R = require('ramda')
@@ -23,7 +23,8 @@ const forwardWindowEvents = (evts) =>
 app.setName(pkg.title)
 
 global.shared = R.pick(['title', 'version', 'author', 'homepage'], pkg)
-global.shared.platform = process.platform
+global.shared.platform  = process.platform
+global.shared.githubUrl = pkg.repository.url
 
 app.rebuildTray = () => tray.setContextMenu(R.apply(buildTrayMenu, [appWindow, bookmarks, buildingJobs]))
 app.toggleVisible = () => {
@@ -68,7 +69,7 @@ ipcMain.on('bookmarks', (e, v) => {
 })
 
 function createWindow() {
-    app.willQuitApp = false
+    app.willQuit = false
     appWindow = new BrowserWindow({
         width: 960,
         maxWidth: 960,
@@ -101,7 +102,7 @@ function createWindow() {
     forwardWindowEvents(['blur', 'focus', 'show'])
 
     appWindow.on('close', (e) => {
-        if (app.willQuitApp !== true && settings.quitonclose !== true) {
+        if (app.willQuit !== true && settings.quitonclose !== true) {
             e.preventDefault()
             appWindow.hide()
         }
@@ -116,14 +117,23 @@ function createWindow() {
 
 app.on('activate', () => R.isNil(appWindow) ? createWindow() : appWindow.show())
 app.on('ready', createWindow)
-app.on('before-quit', () => app.willQuitApp = true)
+app.on('before-quit', () => app.willQuit = true)
 app.on('will-quit', () => appWindow = null)
 
 const send = R.curryN(2, (evt, value) => appWindow.webContents.send(evt, value))
+
+updater.on('error', send('asset-error'))
+updater.on('ready', send('asset-ready'))
+
 ipcMain.on('request', (e, v) => {
-    R.cond([
-        [R.equals('install-update'), installUpdate],
-        [R.equals('check-updates'), checkUpdates],
+    const response = R.cond([
+        [R.equals('install'), R.pipe(() => app.willQuit = true, updater.install)],
+        [R.equals('download-asset'), updater.download],
+        [R.equals('check-asset'), updater.checkAsset],
         [R.T, (msg) => { throw new Error('Unknown message type ' + msg) }]
-    ])(v.msgType).then(send(v.msgType)).catch(send(v.msgType + 'fail'))
+    ])(v.msgType)
+
+    if (response instanceof Promise) {
+        return response.then(send(v.msgType)).catch((e) => send(v.msgType + 'fail', e.message))
+    }
 })

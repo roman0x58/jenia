@@ -1,6 +1,7 @@
 'use strict'
-let { remote, ipcRenderer } = require('electron')
+let { remote, ipcRenderer, shell } = require('electron')
 
-window.ipcRenderer   = ipcRenderer
+window.renderer      = ipcRenderer
 window.shared        = remote.getGlobal('shared')
 window.currentWindow = remote.getCurrentWindow()
+window.openExternal  = shell.openExternal

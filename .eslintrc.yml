@@ -8,7 +8,7 @@ parserOptions:
   ecmaVersion: 2017
   sourceType: module
 globals:
-  ipcRenderer: true
+  renderer: true
 rules:
   no-trailing-spaces: "error"
   no-console: off

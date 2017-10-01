@@ -5,19 +5,19 @@ import R from 'ramda'
 import { Maybe } from 'ramda-fantasy'
 import flyd from 'flyd'
 
-import AppModel, { defaultServer, serverPredicate } from './models/app'
+import AppModel, { defaultServer, serverPredicate, setting } from './models/app'
 import { createModel } from './models/jenkins'
 import u, { checkPaths, logFactory, platform, withoutRedraw } from './components/util'
 // Components
 import notifications from './components/notifications'
 import modal from './components/modal'
-import tooltip, { Tip } from './components/tooltip'
+import tooltip from './components/tooltip'
 import mask from './components/mask'
 import { burial, resurrect } from './components/cemetery'
 import { refresh, refreshImmediate } from './components/refresh'
 import dispatcher from './dispatcher'
 import { ipc } from './services/ipc'
-import { checkForUpdates, installUpdate, updateAvailable } from './services/updates'
+import { indicator, update } from './services/updates'
 // Views
 import { Login } from './views/login'
 import { Job } from './views/job'
@@ -57,10 +57,7 @@ const Footer = {
         return m('.jn-application__footer', [
             m('.jn-application__footer-content', vnode.children),
             m('.jn-application__footer-meta',
-                m('span.jn-version', `Version ${shared.version}`),
-                updateAvailable() ?
-                    Tip.with(m('span.jn-update-available', { onclick: installUpdate }, '(Update available)'), 'Install Update & Restart')
-                    : null
+                m('span.jn-version', `Version ${shared.version}`), indicator()
             )
         ])
     }
@@ -117,22 +114,21 @@ const Layout = {
         ]
     }
 }
-const setting = (prop) => R.prop(prop, AppModel.settings())
 const ifSetting = (prop, value, trueFn, falseFn = R.identity) => R.ifElse(R.always(R.propEq(prop, value)(AppModel.settings())), trueFn, falseFn)
 if (R.either(platform.linux, platform.win32)()) {
     // This will add a focus border to the window
-    ipcRenderer.on('browser-window-focus', m.redraw)
-    ipcRenderer.on('browser-window-blur', m.redraw)
+    renderer.on('browser-window-focus', m.redraw)
+    renderer.on('browser-window-blur', m.redraw)
 }
 // refresh application when window has been shown
-ipcRenderer.on('browser-window-show', () => App.refresh())
+renderer.on('browser-window-show', () => App.refresh())
 
 // Catch some things from main process
-ipcRenderer.on('build', (e, v) => App.model.runBuild(v.job, v.job.paramses)
+renderer.on('build', (e, v) => App.model.runBuild(v.job, v.job.paramses)
     .then(() => new Notification('Build started', { body: v.name }))
     .then(R.when(R.always(browserWindow.isVisible()), () => App.refresh()))
 )
-ipcRenderer.on('route', (e, v) => App.routeTo(v.path, v.attrs))
+renderer.on('route', (e, v) => App.routeTo(v.path, v.attrs))
 
 const viewIndex = (view) => R.findIndex(R.propEq('name', R.prop('name', view)))(App.model.views())
 const kill = R.forEach(R.invoker(1, 'end')(true))
@@ -150,7 +146,7 @@ const App = {
     },
 
     showJob(j) {
-        return dispatcher.dispatch('setJob', j).then(() => App.routeTo('job', { active: viewIndex(App.model.view())}))
+        return dispatcher.dispatch('setJob', j).then(() => App.routeTo('job', { active: viewIndex(App.model.view()) }))
     },
 
     signIn(credentials) {
@@ -228,7 +224,7 @@ const initApp = () => {
     }
 }
 initApp()
-    .then(checkForUpdates)
+    .then(update.check)
     .then(() => m.mount(document.body, App))
 
 export default App

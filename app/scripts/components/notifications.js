@@ -7,7 +7,7 @@ import { $add, $update, $rm, promisify } from './util'
 import flyd from 'flyd'
 import dom from './dom'
 
-const types = ['success', 'info', 'error']
+const types = ['success', 'info', 'error', 'warn']
 const convert = R.converge(R.zipObj, [R.nthArg(1), R.map])
 
 let animateOnRemove
@@ -20,7 +20,7 @@ const state = {
     },
     add(message, type, attrs = {}) {
         let n = { message, type, id: util.id(), attrs }
-        setTimeout(() => state.del(n), 5000)
+        if (attrs.dismissable !== false) setTimeout(() => state.del(n), 5000)
         if (state.items().length >= state.max) {
             animateOnRemove = false
             return $update(state.max - 1, n)(state.items)

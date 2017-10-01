@@ -19,6 +19,7 @@
 @import 'modules/params'
 @import 'modules/queue'
 @import 'modules/bookmark'
+@import 'modules/updates'
 
 @font-face 
   font-family 'Source Sans Pro'
@@ -35,10 +36,6 @@
 global-reset()
 scrollbar()
 
-/* 
- * SDS Updater styles
- * Namespace : up
- */
 html, 
 body 
     height 100%
@@ -48,6 +45,12 @@ body
     overflow hidden
     -webkit-font-smoothing antialiased
     text-rendering optimizeLegibility
+
+a
+    text-decoration none
+    color: $cl.gray
+    &:hover
+        border-bottom: 2px solid $cl.light-gray
 
 h1,h2,h3,h4
     font-weight bold
@@ -141,29 +144,6 @@ h1,h2,h3,h4
  .jn-version
     text-align right
     color #999
-
- .jn-update
-    &-fail
-        background: $cl.red !important
-    &-ok, &-fail
-        backface-visibility hidden
-        border-radius 50px
-        background: $cl.green
-        width 12px
-        height 12px
-        padding 3px
-        fill white
-        margin-left 5px
-        margin-top -3px
-    &-sync
-        fill: $cl.blue
-        animation spin 1.3s infinite cubic-bezier(.3,.96,.56,.82)
-        margin-left 5px
-        margin-top -3px
-    &-available
-        color: $cl.orange
-        margin-left 5px
-        cursor pointer
 
 .jn-default-header
     &__item

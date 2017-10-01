@@ -9,7 +9,7 @@ const pkg = require('../../package.json'),
     apply = require('async/apply'),
     del = require('del'),
     packager = require('electron-packager'),
-    zip = require('tar.gz'),
+    archiver = require('archiver'),
     fs = require('fs'),
     debInstaller = require('electron-installer-debian'),
     rpmInstaller = require('electron-installer-redhat'),
@@ -109,8 +109,16 @@ const rename = (ext, name, done) => {
     fs.rename(R.when(R.is(Array), R.head)(findPackage(ext)), paths.release(`installers/${name}`), done)
 }
 const finalName = (ext) => `${pkg.name}-${pkg.version}-${pkgOptions.platform}-x${pkgOptions.arch}.${ext || pkgOptions.type}`
-const zipPackage = (type, done) =>
-    zip().compress(paths.release(`${appName}-${pkgOptions.platform}-x64`), paths.release(`installers/${finalName(type)}`), done)
+const zipPackage = (type, done) => {
+    const output = fs.createWriteStream(paths.release(`installers/${finalName(type)}`))
+    const archive = archiver(type)
+    output.on('close', done)
+    output.on('error', done)
+
+    archive.pipe(output)
+    archive.directory(paths.release(`${appName}-${pkgOptions.platform}-x64`), false)
+    archive.finalize()
+}
 
 const createPkg = (done) => {
     const options = {
@@ -183,7 +191,7 @@ const cleanUp = (done) => {
 
 const createInstallersFolder = (done) => {
     fs.mkdir(paths.release('installers'), (err) => {
-        if(err && err.code !== 'EEXIST') done(err)
+        if (err && err.code !== 'EEXIST') done(err)
         done()
     })
 }
