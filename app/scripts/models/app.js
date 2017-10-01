@@ -4,7 +4,7 @@ import flyd from 'flyd'
 import R from 'ramda'
 import { collectionMixin } from '../components/util'
 import { dropRepeatsWith } from 'flyd/module/droprepeats'
-import { env } from '../components/util'
+import { platform } from '../components/util'
 
 const AppModel = collectionMixin({
     servers: flyd.stream([]),
@@ -15,7 +15,7 @@ const AppModel = collectionMixin({
         saveserverpass: false,
         // On linux platforms quitonclose setting
         // by defeault should be true
-        quitonclose: env.linux(),
+        quitonclose: platform.linux(),
         autoupdate: false
     }),
     default(credentials, state) {
