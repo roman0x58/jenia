@@ -109,9 +109,10 @@ const rename = (ext, name, done) => {
     fs.rename(R.when(R.is(Array), R.head)(findPackage(ext)), paths.release(`installers/${name}`), done)
 }
 const finalName = (ext) => `${pkg.name}-${pkg.version}-${pkgOptions.platform}-x${pkgOptions.arch}.${ext || pkgOptions.type}`
-const zipPackage = (type, done) => {
-    const output = fs.createWriteStream(paths.release(`installers/${finalName(type)}`))
-    const archive = archiver(type)
+const zipPackage = (options, done) => {
+    const output = fs.createWriteStream(paths.release(`installers/${finalName(options.type)}`))
+    const archive = archiver(options.type, options)
+
     output.on('close', done)
     output.on('error', done)
 
@@ -164,7 +165,7 @@ const createInstaller = (done) => {
         case 'deb':
             series([
                 apply(linuxInstaller, debInstaller),
-                apply(zipPackage, 'tar.gz')
+                apply(zipPackage, { type: 'tar', gzip: true})
             ], done)
             break
         case 'rpm':
@@ -173,7 +174,7 @@ const createInstaller = (done) => {
         case 'dmg':
             series([
                 darwinInstaller,
-                apply(zipPackage, 'zip')
+                apply(zipPackage, { type: 'zip' })
             ], done)
             break
         case 'exe':
