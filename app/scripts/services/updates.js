@@ -47,8 +47,10 @@ export const indicator = () => {
     const status = (message, attrs) =>
         m(`span.jn-update-status.jn-update-status--${state}`, [svg(attrs.svg), m('span.jn-update-status__msg', R.omit('svg', attrs), message)])
     const is = R.equals(state)
-    if (R.or(is('syncing'), is('downloading')))
-        return status(state === 'syncing' ? 'Checking for updates' : 'Downloading update', { svg: 'sync' })
+    if (is('syncing'))
+        return status('Checking for updates', { svg: 'sync' })
+    if (is('downloading'))
+        return status('Downloading update', { svg: 'sync' })
     if (is('available'))
         return status('Download update', { onclick: update.download, svg: 'arrow-down' })
     if (is('ready'))
