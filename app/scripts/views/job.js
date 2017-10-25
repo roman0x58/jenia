@@ -43,8 +43,9 @@ export const Console = {
     oninit({ state, attrs }) {
         // Wrap each line to mithril div node, when the log stream gets values,
         // to avoid the big text node rerendering
+        const isActive = !attrs.logText.end()
         state.pinned = false
-        state.log = attrs.isActive ? flyd.scan(wrapToNode, [], attrs.logText) : attrs.logText
+        state.log = isActive ? flyd.scan(wrapToNode, [], attrs.logText) : attrs.logText
     },
     view({ state, attrs }) {
         return m('.jn-console', R.omit('logText')(attrs),
@@ -174,7 +175,7 @@ export const Job = {
                         class: util.classy({
                             'jn-job__console': true,
                             'jn-console--hidden': !(state.console())
-                        }), isActive: logIsActive, logText
+                        }), logText
                     })
                 )(logText)
             ),
