@@ -23,7 +23,7 @@
     "browserify": "^14.3.0",
     "browserify-handlebars": "^1.0.0",
     "del": "^2.2.0",
-    "electron": "^1.7.8",
+    "electron": "^2.0.8",
     "electron-installer-debian": "^0.5.1",
     "electron-installer-dmg": "^0.2.1",
     "electron-installer-redhat": "^0.4.0",
@@ -54,7 +54,7 @@
     "poststylus": "^0.2.3",
     "q": "^1.4.1",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
+    "vinyl-source-stream": "^2.0.0",
     "watchify": "^3.9.0"
   },
   "dependencies": {
