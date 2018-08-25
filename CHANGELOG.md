@@ -1,4 +1,7 @@
 # Jenia Change log
+## 0.3.5 - 2018-08-25
+### Changed
+    - Upgrade electron version to 2.0.8
 ## 0.3.5 - 2017-10-01
 ### Changed
     - Upgrade electron version to 1.7.8
